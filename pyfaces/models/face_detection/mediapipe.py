@@ -1,9 +1,10 @@
 import numpy as np
 import logging
 from typing import List, Any
+import cv2
 
 # FaceTech modules
-from facetech.models.detector import Detector, DetectedFace
+from pyfaces.models.detector import Detector, DetectedFace
 
 logging.basicConfig(level=logging.INFO)
 
@@ -65,15 +66,21 @@ class MediaPipeDetector(Detector):
         
         Parameters:
             img: np.ndarray
-                Input image as a numpy array (BGR or RGB format).
+                Input image as a numpy array (BGR format from OpenCV).
                 
         Returns:
             List[DetectedFace]
                 A list of DetectedFace objects containing bounding box coordinates
                 and confidence scores for each detected face. Empty list if no faces detected.
         """
-        img_height, img_width = img.shape[:2]
-        results = self.model.process(img)
+        if img is None:
+            raise ValueError("Input image is None. Please provide a valid image.")
+
+        # Convert BGR to RGB for MediaPipe
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        img_height, img_width = img_rgb.shape[:2]
+        results = self.model.process(img_rgb)
         
         # Check if no faces detected
         if results.detections is None:
