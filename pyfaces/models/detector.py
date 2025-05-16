@@ -73,9 +73,33 @@ class DetectedFace:
         w (int): The width of the face bounding box.
         h (int): The height of the face bounding box.
         conf (float): The confidence score of the face detection, typically between 0 and 1.
+        class_name (str): The name of the detected class (e.g., "face").
     """
     x: int
     y: int
     w: int 
     h: int 
     conf: float
+    class_name: str
+
+    @property
+    def xyxy(self):
+        """
+        Returns the bounding box coordinates as a tuple (x1, y1, x2, y2).
+        """
+        return (self.x, self.y, self.x + self.w, self.y + self.h)
+    
+    @property
+    def xywh(self):
+        """
+        Returns the bounding box coordinates as a tuple (x, y, w, h).
+        """
+        return (self.x, self.y, self.w, self.h)
+
+    def to_dict(self):
+        return {
+            "xywh": self.xywh,
+            "xyxy": self.xyxy,
+            "conf": self.conf,
+            "class_name": self.class_name
+        }
