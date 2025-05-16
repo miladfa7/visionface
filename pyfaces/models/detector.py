@@ -73,6 +73,7 @@ class DetectedFace:
         w (int): The width of the face bounding box.
         h (int): The height of the face bounding box.
         conf (float): The confidence score of the face detection, typically between 0 and 1.
+        class_name (str): The name of the detected class (e.g., "face").
     """
     xmin: int
     ymin: int
