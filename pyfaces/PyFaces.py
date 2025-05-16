@@ -36,5 +36,20 @@ def detect_faces(
                 If the input image is None or cannot be properly loaded.
         """
     
-        return detection.detect_faces(image_path=image_path, detector_backbone=detector_backbone)
+        return detection.detect_faces(
+                image_path=image_path, 
+                detector_backbone=detector_backbone
+        )
 
+
+def detect_faces_with_prompt(
+        image_path: Union[str, np.ndarray],
+        promtp: Union[str, List[str]],
+        detector_backbone: str = "yoloeye",
+) -> List:
+        
+        return detection.detect_faces_with_prompt(
+                image_path=image_path, 
+                promtp=promtp,
+                detector_backbone=detector_backbone
+        ) 

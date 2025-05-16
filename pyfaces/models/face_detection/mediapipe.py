@@ -122,7 +122,8 @@ class MediaPipeDetector(Detector):
                 y=y,
                 w=w,
                 h=h,
-                conf=round(confidence, 2)
+                conf=round(confidence, 2),
+                class_name="face"
             )
             detections.append(facial_info)
             

@@ -2,6 +2,7 @@ from typing import Any
 
 # pyfaces modules
 from pyfaces.models.face_detection.mediapipe import MediaPipeDetector
+from pyfaces.models.face_detection.YOLOEye import YOLOEyeDetector
 
 def build_model(model_name: str, task: str) -> Any:
     """
@@ -30,6 +31,7 @@ def build_model(model_name: str, task: str) -> Any:
     models = {
         "face_detection": {
             "mediapipe": MediaPipeDetector,
+            "yoloeye": YOLOEyeDetector
         }
     }
     

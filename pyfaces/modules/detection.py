@@ -44,4 +44,18 @@ def detect_faces(
     return detected_faces
 
 
+def detect_faces_with_prompt(
+    image_path: Union[str, np.ndarray],
+    promtp: Union[str, List[str]],
+    detector_backbone: str = "yoloeye",
+) -> List:
+   
+    img = load_image(image_path)
+    if img is None:
+        raise ValueError("Input image is None. Please provide a valid image.")
+    height, width, _ = img.shape
+    # Build face detector
+    face_detector = build_model(detector_backbone, "face_detection")
+    detected_faces = face_detector.detect_faces_with_prompt(img, promtp)
+    return detected_faces
 

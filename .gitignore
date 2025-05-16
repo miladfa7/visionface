@@ -1,1 +1,4 @@
 testing/
+__pycache__/
+requirements.txt
+short_todo.md
