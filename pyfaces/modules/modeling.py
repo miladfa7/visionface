@@ -2,7 +2,11 @@ from typing import Any
 
 # pyfaces modules
 from pyfaces.models.face_detection.mediapipe import MediaPipeDetector
-from pyfaces.models.face_detection.YOLOEye import YOLOEyeDetector
+from pyfaces.models.face_detection.YOLOEye import (
+    YOLOEyeSmallDetector,
+    YOLOEyeMediumDetector,
+    YOLOEyeLargeDetector
+)
 
 def build_model(model_name: str, task: str) -> Any:
     """
@@ -31,7 +35,10 @@ def build_model(model_name: str, task: str) -> Any:
     models = {
         "face_detection": {
             "mediapipe": MediaPipeDetector,
-            "yoloeye": YOLOEyeDetector
+            "yoloe-small": YOLOEyeSmallDetector,
+            "yoloe-medium": YOLOEyeMediumDetector,
+            "yoloe-large": YOLOEyeLargeDetector,
+            
         }
     }
     
@@ -39,4 +46,6 @@ def build_model(model_name: str, task: str) -> Any:
         raise ValueError(f"Unimplemented task: {task}")
     
     model = models[task].get(model_name)
+    if model is None:
+        raise ValueError(f"Invalid model_name passed - {task}/{model_name}")
     return model()

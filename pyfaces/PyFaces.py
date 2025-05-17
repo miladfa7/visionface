@@ -45,7 +45,7 @@ def detect_faces(
 def detect_faces_with_prompt(
         image_path: Union[str, np.ndarray],
         promtp: Union[str, List[str]],
-        detector_backbone: str = "yoloeye",
+        detector_backbone: str = "yoloe-medium",
 ) -> List:
         
         return detection.detect_faces_with_prompt(

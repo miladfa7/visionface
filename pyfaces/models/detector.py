@@ -85,16 +85,18 @@ class DetectedFace:
     @property
     def xyxy(self):
         """
-        Returns the bounding box coordinates as a tuple (x1, y1, x2, y2).
+        Returns the bounding box coordinates as a tuple (xmin, ymin, xmax, ymax).
         """
-        return (self.x, self.y, self.x + self.w, self.y + self.h)
+        return (self.xmin, self.ymin, self.xmax, self.ymax)
     
     @property
     def xywh(self):
         """
         Returns the bounding box coordinates as a tuple (x, y, w, h).
         """
-        return (self.x, self.y, self.w, self.h)
+        width = self.xmax - self.xmin
+        height = self.ymax - self.ymin
+        return (self.xmin, self.ymin, width, height)
 
     def to_dict(self):
         return {
