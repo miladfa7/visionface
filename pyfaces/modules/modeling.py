@@ -1,7 +1,7 @@
 from typing import Any
 
 # pyfaces modules
-from pyfaces.models.face_detection.mediapipe import MediaPipeDetector
+from pyfaces.models.face_detection.MediaPipe import MediaPipeDetector
 from pyfaces.models.face_detection.YOLOEye import (
     YOLOEyeSmallDetector,
     YOLOEyeMediumDetector,

@@ -5,6 +5,7 @@ import cv2
 
 # FaceTech modules
 from pyfaces.models.detector import Detector, DetectedFace
+from pyfaces.commons.utils import xywh2xyxy
 
 logging.basicConfig(level=logging.INFO)
 
@@ -117,11 +118,14 @@ class MediaPipeDetector(Detector):
             y = int(bounding_box.ymin * img_height)
             h = int(bounding_box.height * img_height)
             
+            # Convert xywh format to xyxy
+            bbox = xywh2xyxy([x, y, w, h])
+
             facial_info = DetectedFace(
-                x=x,
-                y=y,
-                w=w,
-                h=h,
+                xmin=bbox[0],
+                ymin=bbox[1],
+                xmax=bbox[2],
+                ymax=bbox[3],
                 conf=round(confidence, 2),
                 class_name="face"
             )
