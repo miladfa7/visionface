@@ -11,6 +11,94 @@ from pyfaces.annotators.utils import (
     get_xyxy
 )
 
+class BoxAnnotator(BaseAnnotator):
+    """
+    A class for drawing complete rectangular bounding boxes on an image using provided detections.
+    
+    Parameters
+    ----------
+    color : tuple, optional
+        The BGR color tuple for the bounding box lines, by default (245, 113, 47)
+    thickness : int, optional
+        The thickness of the bounding box lines in pixels, by default 4
+    
+    Attributes
+    ----------
+    color : tuple
+        The BGR color tuple used for drawing bounding box lines
+    thickness : int
+        The thickness of the bounding box lines in pixels
+    
+    Examples
+    --------
+    >>> # Using Face Detector
+    >>> from pyfaces import PyFaces, FaceAnnotators
+    >>> detected_faces = PyFaces.detect_faces(img)
+    >>> annotated_img = FaceAnnotators.box_annotator(img, detected_faces, highlight=True)
+
+    >>> # Using raw detection lists
+    >>> raw_detections = [[10, 20, 100, 200, 0.95, 'face'], [30, 40, 120, 220, 0.90, 'face']]
+    >>> annotated_img = annotator.annotate(img, raw_detections, highlight=True)
+    """
+
+    def __init__(self, color: tuple = (245, 113, 47), thickness: int = 4):
+        self.color = color
+        self.thickness = thickness
+
+    def annotate(
+            self, 
+            img: ImageType, 
+            detections: Union[List[Detector], List[RawDetection]],
+            highlight: bool = True,
+            highlight_opacity: float = 0.2,
+            highlight_color: tuple = (255, 255, 255),
+    ) -> ImageType:
+        """
+        Annotate the image with complete rectangular bounding boxes for each detection.
+        
+        This method draws full rectangular bounding boxes around each detected region
+        defined by the provided detections. Optionally, it can also highlight
+        the detected regions with a semi-transparent overlay.
+        
+        Parameters
+        ----------
+        img : ImageType
+            The input image to annotate (can be a file path string, numpy array, or PIL Image)
+        detections : Union[List[Detector], List[RawDetection]]
+            List of detections, where each detection can be either:
+            - Detector object with an xyxy property returning (x1, y1, x2, y2)
+            - RawDetection list in format [x1, y1, x2, y2, confidence, class_name]
+        highlight : bool, optional
+            Whether to highlight the detected regions, by default True
+        highlight_opacity : float, optional
+            Opacity of the highlight overlay (0.0 to 1.0), by default 0.2
+        highlight_color : tuple, optional
+            BGR color tuple for the highlight, by default (255, 255, 255)
+            
+        Returns
+        -------
+        ImageType
+            The annotated image with rectangular bounding boxes and optional highlights
+        """
+        # Convert image to numpy for processing
+        img = convert_img_to_numpy(img)
+
+        # Apply highlighting if enabled
+        if highlight:
+            img = highlight_face(
+                img,
+                detections,
+                highlight_opacity=highlight_opacity,
+                highlight_color=highlight_color
+            )
+
+        # Draw complete rectangular bounding boxes
+        for detection in detections:
+            x1, y1, x2, y2 = get_xyxy(detection)
+            cv2.rectangle(img, (x1, y1), (x2, y2), self.color, thickness=self.thickness)
+        
+        return img
+    
 class BoxCornerAnnotator(BaseAnnotator):
     """
     A class for drawing box corners on an image using provided detections.
