@@ -3,7 +3,7 @@ from typing import List, Union, Tuple
 
 #PyFaces module
 from pyfaces.annotators.base import ImageType, RawDetection
-from pyfaces.models.detector import Detector
+from pyfaces.models.Detector import Detector
 from pyfaces.annotators.detection import BoxCornerAnnotator, BoxAnnotator
 
 

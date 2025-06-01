@@ -2,7 +2,7 @@ from typing import Union, List
 import numpy as np
 
 # pyfaces modules 
-from pyfaces.models.detector import Detector, DetectedFace
+from pyfaces.models.Detector import Detector, DetectedFace
 from pyfaces.modules.modeling import build_model
 from pyfaces.commons.image_utils import load_image
 

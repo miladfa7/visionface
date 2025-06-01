@@ -4,7 +4,7 @@ from typing import List, Union
 
 # Pyfaces modules 
 from pyfaces.annotators.base import BaseAnnotator, ImageType, RawDetection
-from pyfaces.models.detector import Detector
+from pyfaces.models.Detector import Detector
 from pyfaces.annotators.utils import (
     highlight_face, 
     convert_img_to_numpy,

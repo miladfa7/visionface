@@ -6,7 +6,7 @@ import cv2
 from enum import Enum
 
 # Pyfaces modules 
-from pyfaces.models.detector import Detector, DetectedFace
+from pyfaces.models.Detector import Detector, DetectedFace
 
 logger = logging.getLogger(__name__)
 
