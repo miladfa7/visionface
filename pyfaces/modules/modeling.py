@@ -1,12 +1,16 @@
 from typing import Any
 
-# pyfaces modules
+# face detection models
 from pyfaces.models.face_detection.MediaPipe import MediaPipeDetector
 from pyfaces.models.face_detection.YOLOEye import (
     YOLOEyeSmallDetector,
     YOLOEyeMediumDetector,
     YOLOEyeLargeDetector
 )
+
+# Landmarks detection models
+from pyfaces.models.landmark_detection.MediaPipe import MediaPipeLandmarkDetector
+
 
 def build_model(model_name: str, task: str) -> Any:
     """
@@ -39,6 +43,9 @@ def build_model(model_name: str, task: str) -> Any:
             "yoloe-medium": YOLOEyeMediumDetector,
             "yoloe-large": YOLOEyeLargeDetector,
             
+        },
+        "landmark_detection": {
+            "mediapipe": MediaPipeLandmarkDetector
         }
     }
     

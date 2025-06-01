@@ -4,13 +4,15 @@ from typing import List, Tuple, Union
 
 
 # pyfaces moduels 
-from pyfaces.modules import detection
+from pyfaces.modules import detection, landmarks
+from pyfaces.models.Detector import DetectedFace
+from pyfaces.models.LandmarkDetector import DetectedLandmark3D
 
 
 def detect_faces(
         image_path: Union[str, np.ndarray],
         detector_backbone: str = "mediapipe",
-) -> List:
+) -> List[DetectedFace]:
         """
         Detect faces in an image using the specified detector backbone.
 
@@ -46,10 +48,21 @@ def detect_faces_with_prompt(
         image_path: Union[str, np.ndarray],
         promtp: Union[str, List[str]],
         detector_backbone: str = "yoloe-medium",
-) -> List:
+) -> List[DetectedFace]:
         
         return detection.detect_faces_with_prompt(
                 image_path=image_path, 
                 promtp=promtp,
                 detector_backbone=detector_backbone
         ) 
+
+
+def detect_landmark_3d(
+        image_path: Union[str, np.ndarray],
+        detector_backbone: str = "mediapipe"
+) -> List[DetectedLandmark3D]:
+        
+        return landmarks.detect_landmark_3d(
+                image_path=image_path,
+                detector_backbone=detector_backbone
+        )
