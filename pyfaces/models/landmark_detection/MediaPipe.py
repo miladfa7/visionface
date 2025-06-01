@@ -6,7 +6,7 @@ import cv2
 from pyfaces.models.LandmarkDetector import LandmarkDetector, DetectedLandmark3D
 from pyfaces.models.landmark_detection.utils import medipipe_mesh_landmark_names
 
-class MediaPipeLandmarkDetector(LandmarkDetector):
+class MediaPipeFaceMeshDetector(LandmarkDetector):
     def __init__(self):
         self.mesh_landmark_names = medipipe_mesh_landmark_names()
         self.model = self.build_model()
@@ -17,7 +17,7 @@ class MediaPipeLandmarkDetector(LandmarkDetector):
         except ModuleNotFoundError as error:
             raise ImportError(
                 "The 'mediapipe' library is not installed. "
-                "It is required for MediaPipeLandmarkDetector to work. "
+                "It is required for MediaPipeFaceMeshDetector to work. "
                 "Please install it using: pip install mediapipe"
             ) from error
 

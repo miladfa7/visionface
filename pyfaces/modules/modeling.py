@@ -9,7 +9,7 @@ from pyfaces.models.face_detection.YOLOEye import (
 )
 
 # Landmarks detection models
-from pyfaces.models.landmark_detection.MediaPipe import MediaPipeLandmarkDetector
+from pyfaces.models.landmark_detection.MediaPipe import MediaPipeFaceMeshDetector
 
 
 def build_model(model_name: str, task: str) -> Any:
@@ -45,7 +45,7 @@ def build_model(model_name: str, task: str) -> Any:
             
         },
         "landmark_detection": {
-            "mediapipe": MediaPipeLandmarkDetector
+            "mediapipe": MediaPipeFaceMeshDetector
         }
     }
     
