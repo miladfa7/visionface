@@ -111,3 +111,34 @@ def medipipe_mesh_landmark_names():
                 FACE_MESH_LANDMARK_NAMES[i] = f"face_mesh_{i}"
 
     return FACE_MESH_LANDMARK_NAMES
+
+
+def dlib_landmarks_names():
+    DLIB_LANDMARK_NAMES = {
+        0: "jaw_0", 1: "jaw_1", 2: "jaw_2", 3: "jaw_3", 4: "jaw_4", 5: "jaw_5",
+        6: "jaw_6", 7: "jaw_7", 8: "jaw_8", 9: "jaw_9", 10: "jaw_10", 11: "jaw_11",
+        12: "jaw_12", 13: "jaw_13", 14: "jaw_14", 15: "jaw_15", 16: "jaw_16",
+
+        17: "right_eyebrow_17", 18: "right_eyebrow_18", 19: "right_eyebrow_19",
+        20: "right_eyebrow_20", 21: "right_eyebrow_21",
+
+        22: "left_eyebrow_22", 23: "left_eyebrow_23", 24: "left_eyebrow_24",
+        25: "left_eyebrow_25", 26: "left_eyebrow_26",
+
+        27: "nose_27", 28: "nose_28", 29: "nose_29", 30: "nose_30",
+        31: "nose_31", 32: "nose_32", 33: "nose_33", 34: "nose_34", 35: "nose_35",
+
+        36: "right_eye_36", 37: "right_eye_37", 38: "right_eye_38",
+        39: "right_eye_39", 40: "right_eye_40", 41: "right_eye_41",
+
+        42: "left_eye_42", 43: "left_eye_43", 44: "left_eye_44",
+        45: "left_eye_45", 46: "left_eye_46", 47: "left_eye_47",
+
+        48: "mouth_48", 49: "mouth_49", 50: "mouth_50", 51: "mouth_51",
+        52: "mouth_52", 53: "mouth_53", 54: "mouth_54", 55: "mouth_55",
+        56: "mouth_56", 57: "mouth_57", 58: "mouth_58", 59: "mouth_59",
+        60: "mouth_60", 61: "mouth_61", 62: "mouth_62", 63: "mouth_63",
+        64: "mouth_64", 65: "mouth_65", 66: "mouth_66", 67: "mouth_67"
+    }
+
+    return DLIB_LANDMARK_NAMES

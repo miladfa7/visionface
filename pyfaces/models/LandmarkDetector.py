@@ -30,6 +30,7 @@ class LandmarkDetector(ABC):
 class DetectedLandmark2D:
     x: float
     y : float
+    name: Optional[str] = None
     conf: Optional[float] = None
 
 @dataclass 
