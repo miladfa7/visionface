@@ -35,7 +35,6 @@ class MediaPipeFaceMeshDetector(LandmarkDetector):
         if img is None:
             raise ValueError("Input image is None. Please provide a valid image.")
         
-
         # Convert BGR to RGB for MediaPipe
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_height, img_width = img_rgb.shape[:2]

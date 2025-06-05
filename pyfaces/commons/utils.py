@@ -25,3 +25,6 @@ def xywh2xyxy(detection: List[int]) -> List[int]:
         detection[0] + detection[2],
         detection[1] + detection[3],
     ]
+
+def get_home_directory():
+    return "."
