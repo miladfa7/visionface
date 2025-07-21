@@ -1,5 +1,9 @@
+# Part of this module is adapted from the DeepFace library
+# Source: https://github.com/serengil/deepface/blob/master/deepface/commons/image_utils.py
+# Original author: Alireza Makhzani and contributors
+
 import os
-from typing import Union, Tuple, IO
+from typing import Union, Tuple, IO, List
 import numpy as np
 import cv2
 from pathlib import Path
@@ -9,53 +13,58 @@ from PIL import Image
 import requests
 
 
-
-def load_image(img: Union[str, np.ndarray, IO[bytes]]) -> Tuple[np.ndarray, str]:
+def load_images(
+    inputs: Union[str, np.ndarray, IO[bytes], List[Union[str, np.ndarray, IO[bytes]]]]
+) -> List[Tuple[np.ndarray, str]]:
     """
-    Load image from path, url, file object, base64 or numpy array.
+    Load one or more images from various sources.
+
     Args:
-        img: a path, url, file object, base64 or numpy array.
+        inputs: A single image or a list of images. Each image can be:
+            - A file path (str)
+            - A URL (str)
+            - A base64-encoded string (str)
+            - A numpy array (np.ndarray)
+            - A file-like object (IO[bytes])
+
     Returns:
-        image (numpy array): the loaded image in BGR format
-        image name (str): image name itself
+        List[np.ndarray]: A list of loaded images in BGR format
     """
-    if isinstance(img, np.ndarray):
-        return img
+    if not isinstance(inputs, list):
+        inputs = [inputs]
 
-    if hasattr(img, 'read') and callable(img.read):
-        if isinstance(img, io.StringIO):
-            raise ValueError(
-                'img requires bytes and cannot be an io.StringIO object.'
-            )
-        return load_image_from_io_object(img), 'io object'
+    loaded_images = []
+    for item in inputs:
+        if isinstance(item, np.ndarray):
+            loaded_images.append(item)
+        elif hasattr(item, 'read') and callable(item.read):
+            if isinstance(item, io.StringIO):
+                raise ValueError("Image requires bytes, not io.StringIO.")
+            img_arr = load_image_from_io_object(item)
+            loaded_images.append(img_arr)
+        elif isinstance(item, Path):
+            img_arr = _load_from_str(str(item))
+            loaded_images.append(img_arr)
+        elif isinstance(item, str):
+            img_arr = _load_from_str(item)
+            loaded_images.append(img_arr)
+        else:
+            raise ValueError(f"Unsupported input type: {type(item)}")
+    return loaded_images
 
-    if isinstance(img, Path):
-        img = str(img)
 
-    if not isinstance(img, str):
-        raise ValueError(f"img must be numpy array or str but it is {type(img)}")
-
-    # The image is a base64 string
+def _load_from_str(img: str) -> np.ndarray:
     if img.startswith("data:image/"):
-        return load_image_from_base64(img), "base64 encoded string"
-
-    # The image is a url
-    if img.lower().startswith(("http://", "https://")):
-        return load_image_from_web(url=img), img
-
-    # The image is a path
-    if not os.path.isfile(img):
+        return load_image_from_base64(img)
+    elif img.lower().startswith(("http://", "https://")):
+        return load_image_from_web(url=img)
+    elif not os.path.isfile(img):
         raise ValueError(f"Confirm that {img} exists")
-
-    # image must be a file on the system then
-
-    # image name must have english characters
-    if not img.isascii():
-        raise ValueError(f"Input image must not have non-english characters - {img}")
-
-    img_obj_bgr = cv2.imread(img)
-    # img_obj_rgb = cv2.cvtColor(img_obj_bgr, cv2.COLOR_BGR2RGB)
-    return img_obj_bgr, img
+    elif not img.isascii():
+        raise ValueError(f"Input image must not have non-English characters - {img}")
+    else:
+        img_obj_bgr = cv2.imread(img)
+        return img_obj_bgr
 
 
 def load_image_from_io_object(obj: IO[bytes]) -> np.ndarray:
