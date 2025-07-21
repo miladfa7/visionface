@@ -17,11 +17,20 @@ class WeightsDownloadError(Exception):
 
 
 
+def get_face_models_home() -> str:
+    """
+    Get the home directory for storing model weights
+
+    Returns:
+        str: the home directory.
+    """
+    return str(os.getenv("DEEPFACE_HOME", default=os.path.expanduser("~")))
+
+
 def download_model_weights(
     filename: str,
     download_url: str,
     compression_format: Optional[str] = None,
-    model_name: str = "default"
 ) -> Path:
     """
     Download and extract model weights from a URL.
@@ -29,9 +38,7 @@ def download_model_weights(
     Args:
         filename: Name of the target file (without extension)
         download_url: URL to download the file from
-        compression_format: File compression format ('zip', 'bz2' or None)
-        model_name: Name of the model (used for directory organization)
-        
+        compression_format: File compression format ('zip', 'bz2' or None)        
     Returns:
         Path to the downloaded and extracted file
         
@@ -40,10 +47,10 @@ def download_model_weights(
         FileNotFoundError: If home directory cannot be determined
     """
     
-    home_dir = Path(get_home_directory())
+    home_dir = Path(get_face_models_home())
 
     # Create weights directory structure
-    weights_dir = home_dir / "weights" / model_name
+    weights_dir = home_dir / ".pyfaces/weights"
     weights_dir.mkdir(parents=True, exist_ok=True)
     
     # Define target file path
