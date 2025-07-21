@@ -1,11 +1,12 @@
 from typing import Any
 
 # face detection models
-from pyfaces.models.face_detection.MediaPipe import MediaPipeDetector
-from pyfaces.models.face_detection.YOLOEye import (
-    YOLOEyeSmallDetector,
-    YOLOEyeMediumDetector,
-    YOLOEyeLargeDetector
+from pyfaces.models.face_detection import  (
+    MediaPipe,
+    YOLOEye
+)
+from pyfaces.models.face_embedding import (
+    FaceNet
 )
 
 # Landmarks detection models
@@ -38,14 +39,18 @@ def build_model(model_name: str, task: str) -> Any:
     """
     models = {
         "face_detection": {
-            "mediapipe": MediaPipeDetector,
-            "yoloe-small": YOLOEyeSmallDetector,
-            "yoloe-medium": YOLOEyeMediumDetector,
-            "yoloe-large": YOLOEyeLargeDetector,
+            "mediapipe": MediaPipe.MediaPipeDetector,
+            "yoloe-small": YOLOEye.YOLOEyeSmallDetector,
+            "yoloe-medium": YOLOEye.YOLOEyeMediumDetector,
+            "yoloe-large": YOLOEye.YOLOEyeLargeDetector,
             
         },
         "landmark_detection": {
             "mediapipe": MediaPipeFaceMeshDetector
+        },
+        "face_embedding": {
+            "FaceNet-VGG": FaceNet.FaceNetVGG,
+            "FaceNet-CASIA": FaceNet.FaceNetCASIA
         }
     }
     

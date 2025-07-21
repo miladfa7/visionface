@@ -4,10 +4,10 @@ from typing import List, Tuple, Union
 
 
 # pyfaces moduels 
-from pyfaces.modules import detection, landmarks
+from pyfaces.modules import detection, embedding, landmarks
 from pyfaces.models.Detector import DetectedFace
 from pyfaces.models.LandmarkDetector import DetectedLandmark3D
-
+from pyfaces.models.FaceEmbedding import FaceEmbedding
 
 def detect_faces(
         image_path: Union[str, np.ndarray],
@@ -56,6 +56,27 @@ def detect_faces_with_prompt(
                 detector_backbone=detector_backbone
         ) 
 
+def embed_faces(
+        face_imgs: Union[str, np.ndarray, List[np.ndarray], List[str]],
+        model_name: str = "FaceNet-VGG",
+        normalize_embeddings: bool = True
+) -> FaceEmbedding:
+        """
+        Compute face embeddings for one or more face images.
+
+        Args:
+                face_imgs: A single face image or a list of images as file paths (str) or numpy arrays.
+                model_name: Name of the embedding model to use.
+                normalize_embeddings: Whether to apply L2 normalization to embeddings.
+
+        Returns:
+                FaceEmbedding: Embedding objects for each face.
+        """
+        return embedding.embed_faces(
+                face_imgs=face_imgs,
+                model_name=model_name,
+                normalize_embeddings=normalize_embeddings
+        )
 
 def detect_landmark_3d(
         image_path: Union[str, np.ndarray],
