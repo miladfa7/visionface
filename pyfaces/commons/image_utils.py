@@ -163,3 +163,31 @@ def load_image_from_web(url: str) -> np.ndarray:
     image_array = np.asarray(bytearray(response.raw.read()), dtype=np.uint8)
     img = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
     return img
+
+
+def validate_images(imgs: Union[np.ndarray, List[np.ndarray]]) -> List[np.ndarray]:
+    """
+    Validates and standardizes image input for model processing.
+
+    Args:
+        imgs (Union[np.ndarray, List[np.ndarray]]): 
+            A single image with shape (H, W, 3) or a list of such images as NumPy arrays.
+
+    Returns:
+        List[np.ndarray]: A list of validated images, each with shape (H, W, 3).
+    """
+    if isinstance(imgs, np.ndarray):
+        imgs = [imgs]
+    elif not isinstance(imgs, list):
+        raise ValueError(f"Expected input to be a numpy array or list, but got {type(imgs)}")
+
+    if not imgs:
+        raise ValueError("Empty image list provided for face processing!")
+
+    for i, img in enumerate(imgs):
+        if not isinstance(img, np.ndarray):
+            raise ValueError(f"Image {i} is not a numpy array. Got {type(img)} instead.")
+        if img.ndim != 3 or img.shape[2] != 3:
+            raise ValueError(f"Image {i} must have shape (H, W, 3), got {img.shape}")
+        
+    return imgs
