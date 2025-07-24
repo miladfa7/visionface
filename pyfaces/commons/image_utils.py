@@ -191,3 +191,26 @@ def validate_images(imgs: Union[np.ndarray, List[np.ndarray]]) -> List[np.ndarra
             raise ValueError(f"Image {i} must have shape (H, W, 3), got {img.shape}")
         
     return imgs
+
+
+def get_cropped_face(img: np.ndarray, bbox: List[int]) -> np.ndarray:
+    """
+    Crop a face region from the input image using the detected bounding box.
+
+    Parameters:
+        img (np.ndarray): The input image in BGR or RGB format.
+        bbox (List[int]): Bounding box coordinates in [x1, y1, x2, y2] format.
+
+    Returns:
+        np.ndarray: 
+            The cropped face image as a NumPy array. If the bounding box is 
+            partially out of bounds, it will be clipped to fit within the image dimensions.
+    """
+    h, w = img.shape[:2]
+    x1 = max(0, bbox[0])
+    y1 = max(0, bbox[1])
+    x2 = min(w, bbox[2])
+    y2 = min(h, bbox[3])
+    cropped_face = img[y1:y2, x1:x2] 
+    return cropped_face
+
