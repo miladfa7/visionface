@@ -1,11 +1,11 @@
 import numpy as np
 import logging
-from typing import List, Any
-import cv2
+from typing import List, Any, Union
 
-# FaceTech modules
+# Pyfaces modules
 from pyfaces.models.Detector import Detector, DetectedFace
 from pyfaces.commons.utils import xywh2xyxy
+from pyfaces.commons.image_utils import get_cropped_face, validate_images
 
 logging.basicConfig(level=logging.INFO)
 
@@ -61,40 +61,51 @@ class MediaPipeDetector(Detector):
         )
         return face_detection
     
-    def detect_faces(self, img: np.ndarray) -> List[DetectedFace]:
+    def _detect_one(self, img_id, img):
         """
-        Detect faces in an input image using the MediaPipe model.
-        
-        Parameters:
-            img: np.ndarray
-                Input image as a numpy array (BGR format from OpenCV).
-                
-        Returns:
-            List[DetectedFace]
-                A list of DetectedFace objects containing bounding box coordinates
-                and confidence scores for each detected face. Empty list if no faces detected.
-        """
-        if img is None:
-            raise ValueError("Input image is None. Please provide a valid image.")
+        Detect faces in a single image using the MediaPipe model.
 
-        # Convert BGR to RGB for MediaPipe
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
-        img_height, img_width = img_rgb.shape[:2]
-        results = self.model.process(img_rgb)
-        
-        # Check if no faces detected
+        Parameters:
+            img_id (int): id for the image
+            img (np.ndarray): The input image in BGR format
+
+        Returns:
+            List[DetectedFace]: A list of DetectedFace objects.
+        """
+        # img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        h, w = img.shape[:2]
+        results = self.model.process(img)
         if results.detections is None:
             return []
-        
-        detections = self.process_faces(results, img_width, img_height)
+        return self.process_faces(img, results, w, h, img_id)
+
+    def detect_faces(self, imgs: Union[np.ndarray, List[np.ndarray]]) -> List[DetectedFace]:
+        """
+        Detect faces in one or more input images using the MediaPipe model.
+
+        Parameters:
+            imgs (Union[np.ndarray, List[np.ndarray]]): 
+                A single image or a list of images in BGR format.
+
+        Returns:
+            List[List[DetectedFace]]: 
+                A list where each element is a list of DetectedFace objects for the corresponding input image.
+        """
+        # Validate input images for model processing
+        imgs = validate_images(imgs)
+
+        # Run face detection on each image  
+        detections = [self._detect_one(img_id, img) for img_id, img in enumerate(imgs)]
+
         return detections
 
-    def process_faces(self, results: Any, img_width: int, img_height: int) -> List[DetectedFace]:
+    def process_faces(self, img: np.ndarray, results: Any, img_width: int, img_height: int, img_id: int) -> List[DetectedFace]:
         """
         Process the raw detection results from MediaPipe into DetectedFace objects.
         
         Parameters:
+            img (np.ndarray): 
+                The input image in BGR or RGB format.
             results: Any
                 Detection results from the MediaPipe model's process.
             img_width: int
@@ -120,6 +131,7 @@ class MediaPipeDetector(Detector):
             
             # Convert xywh format to xyxy
             bbox = xywh2xyxy([x, y, w, h])
+            cropped_face = get_cropped_face(img, bbox)
 
             facial_info = DetectedFace(
                 xmin=bbox[0],
@@ -127,12 +139,13 @@ class MediaPipeDetector(Detector):
                 xmax=bbox[2],
                 ymax=bbox[3],
                 conf=round(confidence, 2),
-                class_name="face"
+                class_name="face",
+                cropped_face=cropped_face
             )
             detections.append(facial_info)
             
         logging.info(
-            f"[MediaPipeDetector] {len(detections)} face(s) detected "
-            f"with min confidence threshold {self.conf:.2f}."
+            f"[MediaPipeDetector] {len(detections)} face(s) detected in image id: {img_id}, "
+            f"min confidence threshold {self.conf:.2f}."
         )
         return detections
