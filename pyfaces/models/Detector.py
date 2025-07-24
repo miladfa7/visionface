@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from typing import Any
+from typing import Any, Union, List, Optional
 from dataclasses import dataclass
 
 class Detector(ABC):
@@ -34,12 +34,14 @@ class Detector(ABC):
         pass
 
     @abstractmethod
-    def detect_faces(self, img: np.ndarray):
+    def detect_faces(self, imgs: Union[np.ndarray, List[np.ndarray]]):
         """
-        Detect faces in the given image.
+        Detect faces in a single image or a list of images.
 
         Args:
-            img (np.ndarray): Input image as a NumPy array (H, W, C).
+            imgs (Union[np.ndarray, List[np.ndarray]]): 
+                - A single image as a NumPy array with shape (H, W, 3), or 
+                - A list of such images.
 
         Returns:
             detections (Any): Raw output of the detection model.
@@ -81,6 +83,7 @@ class DetectedFace:
     ymax: int 
     conf: float
     class_name: str
+    cropped_face:  Optional[np.ndarray] = None
 
     @property
     def xyxy(self):
