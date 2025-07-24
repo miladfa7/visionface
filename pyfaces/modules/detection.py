@@ -4,53 +4,51 @@ import numpy as np
 # pyfaces modules 
 from pyfaces.models.Detector import Detector, DetectedFace
 from pyfaces.modules.modeling import build_model
-from pyfaces.commons.image_utils import load_image
+from pyfaces.commons.image_utils import load_images, validate_images
 
 def detect_faces(
-    image_path: Union[str, np.ndarray],
+    images: Union[str, np.ndarray, List[np.ndarray], List[str]],
     detector_backbone: str = "mediapipe",
-) -> List:
+) -> List[List[DetectedFace]]:
     """
-    Detect faces in an image using the specified detector backbone.
+        Detect faces in one or more images using the specified detector backbone.
 
-    This function takes an image path or numpy array and detects faces
-    in the image using the specified detector backend.
+        Parameters
+        ----------
+        images : Union[str, np.ndarray, List[str], List[np.ndarray]]
+                A single image or a list of images. Each image can be either a file path (str)
+                or an image array.
 
-    Parameters
-    ----------
-    image_path : Union[str, np.ndarray]
-        Path to the image file as a string or a numpy array containing
-        the image data.
-    detector_backbone : str, optional
-        Name of the face detection backend to use, by default "mediapipe".
+        detector_backbone : str, optional
+                Name of the face detection backend to use. Default is "mediapipe".
 
-    Returns
-    -------
-    List
-        A list of detected faces. The structure depends on the detector backend used.
-
-    Raises
-    ------
-    ValueError
-        If the input image is None or cannot be properly loaded.
+        Returns
+        -------
+        List[List[DetectedFace]]: 
+                A list where each element is a list of DetectedFace objects for the corresponding input image.
     """
-    img = load_image(image_path)
-    if img is None:
-        raise ValueError("Input image is None. Please provide a valid image.")
-    height, width, _ = img.shape
+    # Load input images
+    loaded_images = load_images(images)
+
+    # Validate input images for model processing
+    validated_images = validate_images(loaded_images)
+    
     # Build face detector
     face_detector = build_model(detector_backbone, "face_detection")
-    detected_faces = face_detector.detect_faces(img)
-    return detected_faces
+
+    # Run face detector on input images
+    detections = face_detector.detect_faces(validated_images)
+
+    return detections
 
 
 def detect_faces_with_prompt(
     image_path: Union[str, np.ndarray],
     promtp: Union[str, List[str]],
-    detector_backbone: str = "yoloeye",
+    detector_backbone: str = "yoloe-medium",
 ) -> List:
    
-    img = load_image(image_path)
+    img = load_images(image_path)
     if img is None:
         raise ValueError("Input image is None. Please provide a valid image.")
     height, width, _ = img.shape

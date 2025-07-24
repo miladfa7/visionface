@@ -10,36 +10,28 @@ from pyfaces.models.LandmarkDetector import DetectedLandmark3D
 from pyfaces.models.FaceEmbedding import FaceEmbedding
 
 def detect_faces(
-        image_path: Union[str, np.ndarray],
+        images: Union[str, np.ndarray, List[np.ndarray], List[str]],
         detector_backbone: str = "mediapipe",
-) -> List[DetectedFace]:
+) -> List[List[DetectedFace]]:
         """
-        Detect faces in an image using the specified detector backbone.
-
-        This function takes an image path or numpy array and detects faces
-        in the image using the specified detector backend.
+        Detect faces in one or more images using the specified detector backbone.
 
         Parameters
         ----------
-        image_path : Union[str, np.ndarray]
-                Path to the image file as a string or a numpy array containing
-                the image data.
+        images : Union[str, np.ndarray, List[str], List[np.ndarray]]
+                A single image or a list of images. Each image can be either a file path (str)
+                or an image array.
+
         detector_backbone : str, optional
-                Name of the face detection backend to use, by default "mediapipe".
+                Name of the face detection backend to use. Default is "mediapipe".
 
         Returns
         -------
-        List
-                A list of detected faces. The structure depends on the detector backend used.
-
-        Raises
-        ------
-        ValueError
-                If the input image is None or cannot be properly loaded.
+        List[List[DetectedFace]]: 
+                A list where each element is a list of DetectedFace objects for the corresponding input image.
         """
-    
         return detection.detect_faces(
-                image_path=image_path, 
+                images=images, 
                 detector_backbone=detector_backbone
         )
 
@@ -55,6 +47,7 @@ def detect_faces_with_prompt(
                 promtp=promtp,
                 detector_backbone=detector_backbone
         ) 
+
 
 def embed_faces(
         face_imgs: Union[str, np.ndarray, List[np.ndarray], List[str]],

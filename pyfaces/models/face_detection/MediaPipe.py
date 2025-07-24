@@ -79,7 +79,7 @@ class MediaPipeDetector(Detector):
             return []
         return self.process_faces(img, results, w, h, img_id)
 
-    def detect_faces(self, imgs: Union[np.ndarray, List[np.ndarray]]) -> List[DetectedFace]:
+    def detect_faces(self, imgs: Union[np.ndarray, List[np.ndarray]]) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the MediaPipe model.
 
@@ -91,9 +91,6 @@ class MediaPipeDetector(Detector):
             List[List[DetectedFace]]: 
                 A list where each element is a list of DetectedFace objects for the corresponding input image.
         """
-        # Validate input images for model processing
-        imgs = validate_images(imgs)
-
         # Run face detection on each image  
         detections = [self._detect_one(img_id, img) for img_id, img in enumerate(imgs)]
 
