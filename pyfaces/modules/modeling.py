@@ -3,7 +3,8 @@ from typing import Any
 # face detection models
 from pyfaces.models.face_detection import  (
     MediaPipe,
-    YOLOEye
+    YOLOEye,
+    YOLO
 )
 from pyfaces.models.face_embedding import (
     FaceNet
@@ -43,7 +44,10 @@ def build_model(model_name: str, task: str) -> Any:
             "yoloe-small": YOLOEye.YOLOEyeSmallDetector,
             "yoloe-medium": YOLOEye.YOLOEyeMediumDetector,
             "yoloe-large": YOLOEye.YOLOEyeLargeDetector,
-            
+            "yolo-nano": YOLO.YOLONanoDetector,
+            "yolo-small": YOLO.YOLOSmallDetector,
+            "yolo-medium": YOLO.YOLOMediumDetector,
+            "yolo-large": YOLO.YOLOLargeDetector,
         },
         "landmark_detection": {
             "mediapipe": MediaPipeFaceMeshDetector
