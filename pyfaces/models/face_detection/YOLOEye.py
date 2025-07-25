@@ -7,8 +7,6 @@ from enum import Enum
 
 # Pyfaces modules 
 from pyfaces.models.Detector import Detector, DetectedFace
-from pyfaces.commons.download_files import download_model_weights
-from pyfaces.commons.image_utils import get_cropped_face
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +17,9 @@ class YOLOEModel(Enum):
     LARGE = 2
 
 #Text/Visual Prompt models
-WEIGHT_NAMES = [
-    "yoloe-11s-seg.pt",
-    "yoloe-11m-seg.pt",
-    "yoloe-11l-seg.pt"
-]
+WEIGHT_NAMES = ["yoloe-11s-seg.pt",
+                "yoloe-11m-seg.pt",
+                "yoloe-11l-seg.pt"]
 
 WEIGHT_URLS = [
     "https://github.com/ultralytics/assets/releases/download/v8.3.0/yoloe-11s-seg.pt",
@@ -39,8 +35,6 @@ class YOLOEyeDetector(Detector):
         """
         Initialize the YOLOEyeDetector.
         """
-        import torch
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = self.build_model(model)
 
     def build_model(self, model: YOLOEModel):
@@ -54,31 +48,44 @@ class YOLOEyeDetector(Detector):
             ) from error
         
         # Get the weight file (and download if necessary)
-        model_id = model.value
-        model_name = WEIGHT_NAMES[model_id]
-        weight_url = WEIGHT_URLS[model_id]
-        model_path = download_model_weights(
-            filename=model_name,
-            download_url=weight_url
-        )
+        weight_file = self._get_weight_file(model)
+        
         # Load the YOLO model
-        return YOLO(model_path)
-
-    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
+        return YOLO(weight_file)
+    
+    def _get_weight_file(self, model: YOLOEModel) -> str:
         """
-        Detect faces in one or more input images using the MediaPipe model.
-
-        Parameters:
-            imgs (List[np.ndarray]): 
-                A single image or a list of images in BGR format.
-
+        Get the weight file for the specified model and download if necessary
+        
+        Args:
+            model (YOLOEModel): The model enum
+            
         Returns:
-            List[List[DetectedFace]]: 
-                A list where each element is a list of DetectedFace objects corresponding to one input image.
-                Each DetectedFace includes the bounding box coordinates, confidence score, class name,
+            str: Path to the weight file
+        """
+        weight_name = WEIGHT_NAMES[model.value]
+        
+        weights_dir = "weights"
+        os.makedirs(weights_dir, exist_ok=True)
+        
+        weight_path = os.path.join(weights_dir, weight_name)
+        
+        if not os.path.isfile(weight_path):
+            logger.info(f"Downloading {weight_name} from {WEIGHT_URLS[model.value]}")
+        
+        return weight_path
+
+    def detect_faces(self, img: np.ndarray) -> List[DetectedFace]:
+        """
+        Detect faces in the given image.        
+        Args:
+            img (np.ndarray): Input image as a NumPy array (H, W, C).
+            
+        Returns:
+            List[DetectedFace]: A list of detected faces.
         """
         # By default, use a generic "face" prompt for detection
-        return self.detect_faces_with_prompt(imgs, prompt="face")
+        return self.detect_faces_with_prompt(img, prompt="face")
     
     def _set_text_prompt(self, prompt: str):
         """
@@ -89,90 +96,61 @@ class YOLOEyeDetector(Detector):
         self.model.set_classes(prompt, self.model.get_text_pe(prompt))
 
     def detect_faces_with_prompt(
-        self, 
-        imgs: List[np.ndarray],
-        prompts: List[str],
-    ) -> List[List[DetectedFace]]:
+            self, img: np.ndarray, prompt: Union[str, List[str]]
+    ) -> List[DetectedFace]:
         """
-        Detect faces in the given image based on text prompt guidance.
-        
-        Args:
-            img (np.ndarray): Input image as a NumPy array (H, W, C).
-            prompt (Union[str, List[str]]): Either a single text prompt or a list of text prompts
-                                            describing the faces to detect.
+            Detect faces in the given image based on text prompt guidance.
             
-        Returns:
-            List[DetectedFace]: A list of detected faces that match the prompt(s).
+            Args:
+                img (np.ndarray): Input image as a NumPy array (H, W, C).
+                prompt (Union[str, List[str]]): Either a single text prompt or a list of text prompts
+                                                describing the faces to detect.
+                
+            Returns:
+                List[DetectedFace]: A list of detected faces that match the prompt(s).
         """
         # Set text prompt to detect faces
-        self._set_text_prompt(prompts)
+        self._set_text_prompt(prompt)
         
-        # Run detection on the given image(s)
-        results = self.model.predict(
-            imgs,
-            verbose=False,
-            show=False, 
-            device=self.device
-        )
-
+        # Run detection on the given image
+        results = self.model.predict(img)
+        
         # Check if no faces detected
         if len(results[0]) == 0:
-            return DetectedFace(
-                xmin=0, 
-                ymin=0, 
-                xmax=0, 
-                ymax=0, 
-                conf=0,
-                class_name=None,
-                cropped_face=None
-            )
-
+            return []
+        
         # Process the results from Ultralytics YOLOE model
-        detections = self.process_faces(imgs, results)
-
+        detections = self.process_faces(results[0])
         return detections
 
-    def detect_faces_with_visual(self, imgs: List[np.ndarray]) -> List[DetectedFace]:
+    def detect_faces_with_visual(self, img: np.ndarray, ) -> List[DetectedFace]:
         pass
     
-    def process_faces(self, imgs: List[np.ndarray], results: List[Any]) -> List[List[DetectedFace]]:
+    def process_faces(self, results) -> List[DetectedFace]:
         """
         Process the raw detections into a structured format.
         """
-
         detections = []
 
-        for idx, result in enumerate(results):
-            
-            if result.boxes is None:
-                continue
-            
-            current_detections = []
-            class_id = result.boxes.cls.cpu().numpy().astype(int)
-            class_names = np.array([result.names[i] for i in class_id])
-            bboxes = result.boxes.xyxy.cpu().numpy().astype(int)
-            confidence = result.boxes.conf.cpu().numpy()
-            img = imgs[idx]
-
-            for bbox, conf, class_name in zip(bboxes, confidence, class_names):
-                cropped_face = get_cropped_face(img, bbox)
-                facial_info = DetectedFace(
-                    xmin=bbox[0], 
-                    ymin=bbox[1], 
-                    xmax=bbox[2], 
-                    ymax=bbox[3], 
-                    conf=round(conf, 2),
-                    class_name=class_name,
-                    cropped_face=cropped_face
-                )
-                current_detections.append(facial_info)
+        class_id = results.boxes.cls.cpu().numpy().astype(int)
+        class_names = np.array([results.names[i] for i in class_id])
+        bboxes = results.boxes.xyxy.cpu().numpy().astype(int)
+        confidence = results.boxes.conf.cpu().numpy()
         
-            logging.info(
-                f"{len(current_detections)} face(s) detected in image id: {idx},"
+        for bbox, conf, class_name in zip(bboxes, confidence, class_names):
+            facial_info = DetectedFace(
+                xmin=bbox[0], 
+                ymin=bbox[1], 
+                xmax=bbox[2], 
+                ymax=bbox[3], 
+                conf=round(conf, 2),
+                class_name=class_name
             )
-
-            detections.append(current_detections)
-
+            detections.append(facial_info)
+        
+        logging.info(
+            f"[YOLOEyeDetector] {len(detections)} face(s) detected "
+        )
         return detections
 
 
