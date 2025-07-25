@@ -37,16 +37,39 @@ def detect_faces(
 
 
 def detect_faces_with_prompt(
-        image_path: Union[str, np.ndarray],
-        promtp: Union[str, List[str]],
+        images: Union[str, np.ndarray, List[np.ndarray], List[str]],
+        promtps: Union[str, List[str]],
         detector_backbone: str = "yoloe-medium",
-) -> List[DetectedFace]:
-        
-        return detection.detect_faces_with_prompt(
-                image_path=image_path, 
-                promtp=promtp,
-                detector_backbone=detector_backbone
-        ) 
+) -> List[List[DetectedFace]]:
+    """
+    Detect faces in one or more images using a prompt-based detection approach.
+
+    Parameters
+    ----------
+    images : Union[str, np.ndarray, List[str], List[np.ndarray]]
+        A single image or a list of images. Each image can be either a file path (str)
+        or an image array.
+
+    promtps : Union[str, List[str]]
+        A single prompt or a list of prompts describing the object(s) to detect.
+        For example, "face".
+
+    detector_backbone : str, optional
+        Name of the detection backend to use. Default is "yoloe-medium".
+        Must support prompt-based detection.
+
+    Returns
+    -------
+    List[List[DetectedFace]]
+        A list where each element is a list of DetectedFace objects
+        for the corresponding input image. Each detection includes bounding box
+        coordinates, confidence score, class name, and optionally a cropped region.
+    """
+    return detection.detect_faces_with_prompt(
+        images=images, 
+        promtps=promtps,
+        detector_backbone=detector_backbone
+    )
 
 
 def embed_faces(

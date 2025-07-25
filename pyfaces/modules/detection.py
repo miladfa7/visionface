@@ -43,17 +43,53 @@ def detect_faces(
 
 
 def detect_faces_with_prompt(
-    image_path: Union[str, np.ndarray],
-    promtp: Union[str, List[str]],
-    detector_backbone: str = "yoloe-medium",
-) -> List:
+        images: Union[str, np.ndarray, List[np.ndarray], List[str]],
+        promtps: Union[str, List[str]],
+        detector_backbone: str = "yoloe-medium",
+) -> List[List[DetectedFace]]:
+    """
+    Detect faces in one or more images using a prompt-based detection approach.
+
+    Parameters
+    ----------
+    images : Union[str, np.ndarray, List[str], List[np.ndarray]]
+        A single image or a list of images. Each image can be either a file path (str)
+        or an image array.
+
+    promtps : Union[str, List[str]]
+        A single prompt or a list of prompts describing the object(s) to detect.
+        For example, "face".
+
+    detector_backbone : str, optional
+        Name of the detection backend to use. Default is "yoloe-medium".
+        Must support prompt-based detection.
+
+    Returns
+    -------
+    List[List[DetectedFace]]
+        A list where each element is a list of DetectedFace objects
+        for the corresponding input image. Each detection includes bounding box
+        coordinates, confidence score, class name, and optionally a cropped region.
+    """
    
-    img = load_images(image_path)
-    if img is None:
-        raise ValueError("Input image is None. Please provide a valid image.")
-    height, width, _ = img.shape
+    # Load input images
+    loaded_images = load_images(images)
+
+    # Validate input images for model processing
+    validated_images = validate_images(loaded_images)
+
+    if isinstance(promtps, str):
+        promtps = [promtps]
+
+    # Validate that the number of prompts matches the number of images
+    if len(validated_images) != len(promtps):
+        raise ValueError("The number of images and prompts must be the same.")
+    
     # Build face detector
     face_detector = build_model(detector_backbone, "face_detection")
-    detected_faces = face_detector.detect_faces_with_prompt(img, promtp)
+
+    # Run face detector with input images and prompts
+    detected_faces = face_detector.detect_faces_with_prompt(validated_images, promtps)
+
     return detected_faces
 
