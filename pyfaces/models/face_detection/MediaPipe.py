@@ -5,7 +5,7 @@ from typing import List, Any, Union
 # Pyfaces modules
 from pyfaces.models.Detector import Detector, DetectedFace
 from pyfaces.commons.utils import xywh2xyxy
-from pyfaces.commons.image_utils import get_cropped_face, validate_images
+from pyfaces.commons.image_utils import get_cropped_face
 
 logging.basicConfig(level=logging.INFO)
 
@@ -61,7 +61,7 @@ class MediaPipeDetector(Detector):
         )
         return face_detection
     
-    def _detect_one(self, img_id, img):
+    def _detect_one(self, img_id: int, img: np.ndarray) -> List[DetectedFace]:
         """
         Detect faces in a single image using the MediaPipe model.
 
@@ -79,12 +79,12 @@ class MediaPipeDetector(Detector):
             return []
         return self.process_faces(img, results, w, h, img_id)
 
-    def detect_faces(self, imgs: Union[np.ndarray, List[np.ndarray]]) -> List[List[DetectedFace]]:
+    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the MediaPipe model.
 
         Parameters:
-            imgs (Union[np.ndarray, List[np.ndarray]]): 
+            imgs: List[np.ndarray]: 
                 A single image or a list of images in BGR format.
 
         Returns:
@@ -115,7 +115,9 @@ class MediaPipeDetector(Detector):
                 A list of DetectedFace objects with face coordinates
                 and confidence scores for each detected face.
         """
+        
         detections = []
+
         for detection in results.detections:
             (confidence,) = detection.score
             bounding_box = detection.location_data.relative_bounding_box
@@ -145,4 +147,5 @@ class MediaPipeDetector(Detector):
             f"[MediaPipeDetector] {len(detections)} face(s) detected in image id: {img_id}, "
             f"min confidence threshold {self.conf:.2f}."
         )
+
         return detections
