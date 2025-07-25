@@ -59,7 +59,7 @@ def _load_from_str(img: str) -> np.ndarray:
     elif img.lower().startswith(("http://", "https://")):
         return load_image_from_web(url=img)
     elif not os.path.isfile(img):
-        raise ValueError(f"Confirm that {img} exists")
+        raise ValueError(f"{img} is not exists")
     elif not img.isascii():
         raise ValueError(f"Input image must not have non-English characters - {img}")
     else:
