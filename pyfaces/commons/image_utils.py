@@ -11,6 +11,7 @@ import io
 import base64
 from PIL import Image
 import requests
+from torch.nn.functional import interpolate
 
 
 def load_images(
@@ -214,3 +215,7 @@ def get_cropped_face(img: np.ndarray, bbox: List[int]) -> np.ndarray:
     cropped_face = img[y1:y2, x1:x2] 
     return cropped_face
 
+
+def image_resample(img, sz):
+    im_data = interpolate(img, size=sz, mode="area")
+    return im_data

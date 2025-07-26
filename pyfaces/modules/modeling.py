@@ -3,6 +3,7 @@ from typing import Any
 # face detection models
 from pyfaces.models.face_detection import  (
     MediaPipe,
+    MTCNN,
     YOLOEye,
     YOLO
 )
@@ -41,6 +42,7 @@ def build_model(model_name: str, task: str) -> Any:
     models = {
         "face_detection": {
             "mediapipe": MediaPipe.MediaPipeDetector,
+            "mtcnn": MTCNN.MTCNNDetector,
             "yoloe-small": YOLOEye.YOLOEyeSmallDetector,
             "yoloe-medium": YOLOEye.YOLOEyeMediumDetector,
             "yoloe-large": YOLOEye.YOLOEyeLargeDetector,
