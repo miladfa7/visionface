@@ -5,7 +5,6 @@ from enum import Enum
 
 # Pyfaces modules
 from pyfaces.models.Detector import Detector, DetectedFace
-from pyfaces.commons.utils import xywh2xyxy
 from pyfaces.commons.image_utils import get_cropped_face
 from pyfaces.commons.download_files import download_model_weights
 

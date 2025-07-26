@@ -82,7 +82,7 @@ class DetectedFace:
     xmax: int 
     ymax: int 
     conf: float
-    class_name: str
+    class_name: Optional[str] = None
     cropped_face:  Optional[np.ndarray] = None
 
     @property

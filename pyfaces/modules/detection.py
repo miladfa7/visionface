@@ -81,9 +81,8 @@ def detect_faces_with_prompt(
     if isinstance(promtps, str):
         promtps = [promtps]
 
-    # Validate that the number of prompts matches the number of images
-    if len(validated_images) != len(promtps):
-        raise ValueError("The number of images and prompts must be the same.")
+    # if len(validated_images) != len(promtps):
+    #     raise ValueError("The number of images and prompts must be the same.")
     
     # Build face detector
     face_detector = build_model(detector_backbone, "face_detection")

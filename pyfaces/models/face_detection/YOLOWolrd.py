@@ -1,51 +1,49 @@
-import os
 import numpy as np
 import logging
 from typing import List, Any, Union
-import cv2
 from enum import Enum
 
-# Pyfaces modules 
+# Pyfaces modules
 from pyfaces.models.Detector import Detector, DetectedFace
-from pyfaces.commons.download_files import download_model_weights
 from pyfaces.commons.image_utils import get_cropped_face
+from pyfaces.commons.download_files import download_model_weights
 
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
-class YOLOEModel(Enum):
-    """Enum for YOLOE model types."""
+class YOLOModel(Enum):
+    """Enum for YOLO World model types."""
     SMALL = 0
     MEDIUM = 1
     LARGE = 2
+    XLARGE = 3
 
-#Text/Visual Prompt models
 WEIGHT_NAMES = [
-    "yoloe-11s-seg.pt",
-    "yoloe-11m-seg.pt",
-    "yoloe-11l-seg.pt"
+    "yolov8s-world.pt",
+    "yolov8m-world.pt",
+    "yolov8l-world.pt",
+    "yolov8x-world.pt",
 ]
 
 WEIGHT_URLS = [
-    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yoloe-11s-seg.pt",
-    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yoloe-11m-seg.pt",
-    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yoloe-11l-seg.pt"
+    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8s-world.pt",
+    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8m-world.pt",
+    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8l-world.pt",
+    "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8x-world.pt",
 ]
 
-class YOLOEyeDetector(Detector):
-    """
-    Reference: https://github.com/THU-MIG/yoloe
-    """
-    def __init__(self, model: YOLOEModel = YOLOEModel.MEDIUM):
+
+class YOLOWolrdDetector(Detector):
+    def __init__(self, model: YOLOModel = YOLOModel.MEDIUM):
         """
-        Initialize the YOLOEyeDetector.
+        Initialize the YOLO Detector.
         """
         import torch
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = self.build_model(model)
 
-    def build_model(self, model: YOLOEModel):
+    def build_model(self, model: YOLOModel):
         try:
-            from ultralytics import YOLO
+            from ultralytics import YOLOWorld
         except ModuleNotFoundError as error:
             raise ImportError(
                 "The 'ultralytics' library is not installed. "
@@ -61,11 +59,11 @@ class YOLOEyeDetector(Detector):
             filename=model_name,
             download_url=weight_url
         )
-        return YOLO(model_path)
+        return YOLOWorld(model_path)
 
     def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
         """
-        Detect faces in one or more input images using the YOLOe model.
+        Detect faces in one or more input images using the YOLO Wolrd model.
 
         Parameters:
             imgs (List[np.ndarray]): 
@@ -77,13 +75,13 @@ class YOLOEyeDetector(Detector):
                 Each DetectedFace includes the bounding box coordinates, confidence score, class name,
         """
         # By default, use a generic "face" prompt for detection
-        return self.detect_faces_with_prompt(imgs, prompt="face")
-    
+        return self.detect_faces_with_prompt(imgs, prompts="face")
+
     def _set_text_prompt(self, prompts: List[str]) -> None:
         """
         Set the text prompt for the YOLO World model.
         """
-        self.model.set_classes(prompts, self.model.get_text_pe(prompts))
+        self.model.set_classes(prompts)
 
     def detect_faces_with_prompt(
         self, 
@@ -95,7 +93,7 @@ class YOLOEyeDetector(Detector):
         
         Args:
             img (np.ndarray): Input image as a NumPy array (H, W, C).
-            prompt (Union[str, List[str]]): Either a single text prompt or a list of text prompts
+            prompts (Union[str, List[str]]): Either a single text prompt or a list of text prompts
                                             describing the faces to detect.
             
         Returns:
@@ -110,8 +108,8 @@ class YOLOEyeDetector(Detector):
             show=False, 
             device=self.device
         )
-        
-        # Process the results from Ultralytics YOLOE model
+
+        # Process the results from Ultralytics YOLO World model
         detections = self.process_faces(imgs, results)
 
         return detections
@@ -127,7 +125,7 @@ class YOLOEyeDetector(Detector):
         detections = []
 
         for idx, result in enumerate(results):
-            
+
             current_detections = []
             class_id = result.boxes.cls.cpu().numpy().astype(int)
             class_names = np.array([result.names[i] for i in class_id])
@@ -161,18 +159,22 @@ class YOLOEyeDetector(Detector):
         return detections
 
 
-
-class YOLOEyeSmallDetector(YOLOEyeDetector):
-    """YOLOEye Small detector implementation"""
+class YOLOWorldSmallDetector(YOLOWolrdDetector):
+    """YOLO Small detector implementation"""
     def __init__(self):
-        super().__init__(model=YOLOEModel.SMALL)
+        super().__init__(model=YOLOModel.SMALL)
 
-class YOLOEyeMediumDetector(YOLOEyeDetector):
-    """YOLOEye Medium detector implementation"""
+class YOLOWorldMediumDetector(YOLOWolrdDetector):
+    """YOLO Medium detector implementation"""
     def __init__(self):
-        super().__init__(model=YOLOEModel.MEDIUM)
+        super().__init__(model=YOLOModel.MEDIUM)
 
-class YOLOEyeLargeDetector(YOLOEyeDetector):
-    """YOLOEye Large detector implementation"""
+class YOLOWorldLargeDetector(YOLOWolrdDetector):
+    """YOLO Large detector implementation"""
     def __init__(self):
-        super().__init__(model=YOLOEModel.LARGE)
+        super().__init__(model=YOLOModel.LARGE)
+
+class YOLOWorldXLargeDetector(YOLOWolrdDetector):
+    """YOLO XLarge detector implementation"""
+    def __init__(self):
+        super().__init__(model=YOLOModel.XLARGE)

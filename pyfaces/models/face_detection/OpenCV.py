@@ -143,15 +143,8 @@ class OpenCVDetector(Detector):
                     face_no +=1
 
             if not len(current_detections):
-                current_detections = DetectedFace(
-                        xmin=0,
-                        ymin=0,
-                        xmax=0,
-                        ymax=0,
-                        conf=0,
-                        class_name=None,
-                        cropped_face=None
-                    )
+                current_detections = DetectedFace(xmin=0, ymin=0, xmax=0, ymax=0, conf=0)
+        
             logging.info(
                 f"[OpenCVDetector] {face_no} face(s) detected in image id: {idx}, "
                 f"min confidence threshold  0.25."

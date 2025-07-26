@@ -4,8 +4,9 @@ from typing import Any
 from pyfaces.models.face_detection import  (
     MediaPipe,
     MTCNN,
-    YOLOEye,
     YOLO,
+    YOLOEye,
+    YOLOWolrd,
     OpenCV
 )
 from pyfaces.models.face_embedding import (
@@ -51,6 +52,10 @@ def build_model(model_name: str, task: str) -> Any:
             "yolo-small": YOLO.YOLOSmallDetector,
             "yolo-medium": YOLO.YOLOMediumDetector,
             "yolo-large": YOLO.YOLOLargeDetector,
+            "yolow-small": YOLOWolrd.YOLOWorldSmallDetector,
+            "yolow-medium": YOLOWolrd.YOLOWorldMediumDetector,
+            "yolow-large": YOLOWolrd.YOLOWorldLargeDetector,
+            "yolow-xlarge": YOLOWolrd.YOLOWorldXLargeDetector,
             "opencv": OpenCV.OpenCVDetector
         },
         "landmark_detection": {
