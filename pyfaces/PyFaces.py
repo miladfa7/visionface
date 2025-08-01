@@ -94,12 +94,32 @@ def embed_faces(
                 normalize_embeddings=normalize_embeddings
         )
 
-def detect_landmark_3d(
-        image_path: Union[str, np.ndarray],
+def detect_3d_landmarks(
+        images: Union[str, np.ndarray, List[np.ndarray], List[str]],
         detector_backbone: str = "mediapipe"
-) -> List[DetectedLandmark3D]:
-        
-        return landmarks.detect_landmark_3d(
-                image_path=image_path,
+) -> List[List[DetectedLandmark3D]]:
+        """
+        Detect 3D facial landmarks in one or more images using the specified detection backbone.
+
+        Parameters
+        ----------
+        images : Union[str, np.ndarray, List[str], List[np.ndarray]]
+                A single image or a list of images. Each image can be either:
+                        - A file path (str) to an image file
+                        - A NumPy array representing the image
+
+        detector_backbone : str, optional
+                The name of the face landmark detection model to use. 
+                Supported options typically include "mediapipe", etc. 
+                Default is "mediapipe".
+
+        Returns
+        -------
+        List[List[DetectedLandmark3D]]
+                A list of DetectedLandmark3D instances containing the 3D coordinates (x, y, z)
+                for each detected facial landmark, along with optional landmark name and confidence score.
+        """
+        return landmarks.detect_3d_landmarks(
+                images=images,
                 detector_backbone=detector_backbone
         )
