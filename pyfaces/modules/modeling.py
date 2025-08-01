@@ -15,7 +15,7 @@ from pyfaces.models.face_embedding import (
 
 # Landmarks detection models
 from pyfaces.models.landmark_detection import (
-    MediaPipe,
+    MediaPipeLandmark,
     Dlib
 )
 
@@ -62,7 +62,7 @@ def build_model(model_name: str, task: str) -> Any:
             "opencv": OpenCV.OpenCVDetector
         },
         "landmark_detection": {
-            "mediapipe": MediaPipe.MediaPipeFaceMeshDetector,
+            "mediapipe": MediaPipeLandmark.MediaPipeFaceMeshDetector,
             "dlib": Dlib.DlibFaceLandmarkDetector
         },
         "face_embedding": {
