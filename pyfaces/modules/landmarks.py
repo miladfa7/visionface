@@ -1,5 +1,5 @@
-from typing import List, Tuple, Union
-import numpy as np 
+from typing import Any, List, Union
+import numpy as np
 
 # Pyfaces modules
 from pyfaces.models.LandmarkDetector import DetectedLandmark2D, DetectedLandmark3D
@@ -7,80 +7,60 @@ from pyfaces.modules.modeling import build_model
 from pyfaces.commons.image_utils import load_images, validate_images
 
 
-def detect_3d_landmarks(
+class LandmarkDetection:
+    def __init__(self, detector_backbone: str = "mediapipe") -> None:
+        """
+        Initialize the landmark detection with the specified backbone.
+        
+        Currently supported backbones:
+            - "mediapipe": 3D landmark detection
+            - "dlib": 2D landmark detection
+
+        Args:
+            detector_backbone: Backbone name for the landmark detector (e.g., "mediapipe", "dlib").
+        """
+        self.detector_backbone = detector_backbone
+        self.landmark_detector = self.build_model()
+
+    def build_model(self) -> Any:
+        """
+        Builds the landmark detection model based on the specified backbone.
+
+        Returns:
+            An initialized landmark detection model.
+        """
+        return build_model(self.detector_backbone, "landmark_detection")
+
+    def detect_3d_landmarks(
+        self,
         images: Union[str, np.ndarray, List[np.ndarray], List[str]],
-        detector_backbone: str = "mediapipe"
-) -> List[List[DetectedLandmark3D]]:
-    """
+    ) -> List[List[DetectedLandmark3D]]:
+        """
         Detect 3D facial landmarks in one or more images using the specified detection backbone.
 
-        Parameters
-        ----------
-        images : Union[str, np.ndarray, List[str], List[np.ndarray]]
-                A single image or a list of images. Each image can be either:
-                        - A file path (str) to an image file
-                        - A NumPy array representing the image
+        Args:
+            images: A single image or a list of images, each can be a file path or a NumPy array.
 
-        detector_backbone : str, optional
-                The name of the face landmark detection model to use. 
-                Supported options typically include "mediapipe", etc. 
-                Default is "mediapipe".
-
-        Returns
-        -------
-        List[List[DetectedLandmark3D]]
-                A list of DetectedLandmark3D instances containing the 3D coordinates (x, y, z)
-                for each detected facial landmark, along with optional landmark name and confidence score.
+        Returns:
+            A list of lists containing DetectedLandmark3D instances with 3D coordinates.
         """
-    # Load input images
-    loaded_images = load_images(images)
-    
-    # Validate input images for model processing
-    validated_images = validate_images(loaded_images)
+        loaded_images = load_images(images)
+        validated_images = validate_images(loaded_images)
+        return self.landmark_detector.detect_landmarks(validated_images)
 
-    # Build landmark detection
-    landmark_detector = build_model(detector_backbone, "landmark_detection")
-
-    # Run landmark detector on input images
-    detected_landmarks = landmark_detector.detect_landmarks(validated_images)
-    
-    return detected_landmarks
-
-def detect_landmarks(
+    def detect_landmarks(
+        self,
         images: Union[str, np.ndarray, List[np.ndarray], List[str]],
-        detector_backbone: str = "dlib"
-) -> List[List[DetectedLandmark2D]]:
+    ) -> List[List[DetectedLandmark2D]]:
         """
         Detect 2D facial landmarks in one or more images using the specified detection backbone.
 
-        Parameters
-        ----------
-        images : Union[str, np.ndarray, List[str], List[np.ndarray]]
-                A single image or a list of images. Each image can be either:
-                        - A file path (str) to an image file
-                        - A NumPy array representing the image
+        Args:
+            images: A single image or a list of images, each can be a file path or a NumPy array.
 
-        detector_backbone : str, optional
-                The name of the face landmark detection model to use. 
-                Supported options typically include "dlib", etc. 
-                Default is "dlib".
-
-        Returns
-        -------
-        List[List[DetectedLandmark2D]]
-                A list of DetectedLandmark2D instances containing the 2D coordinates (x, y)
-                for each detected facial landmark, along with optional landmark name and confidence score.
+        Returns:
+            A list of lists containing DetectedLandmark2D instances with 2D coordinates.
         """
-        # Load input images
         loaded_images = load_images(images)
-
-        # Validate input images for model processing
         validated_images = validate_images(loaded_images)
-
-        # Build landmark detection
-        landmark_detector = build_model(detector_backbone, "landmark_detection")
-
-        # Run landmark detector on input images
-        detected_landmarks = landmark_detector.detect_landmarks(validated_images)
-    
-        return detected_landmarks   
+        return self.landmark_detector.detect_landmarks(validated_images)
