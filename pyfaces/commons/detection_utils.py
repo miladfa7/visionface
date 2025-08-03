@@ -1,4 +1,7 @@
+from typing import List
 import torch
+
+from pyfaces.models.Detector import DetectedFace
 
 
 def convert_to_square_bbox(bboxA):
@@ -40,3 +43,21 @@ def apply_bbox_regression(boundingbox, reg):
     boundingbox[:, :4] = torch.stack([b1, b2, b3, b4]).permute(1, 0)
 
     return boundingbox
+
+def select_max_conf_faces(
+    face_detections: List[List[DetectedFace]]
+) -> List[DetectedFace]:
+    """
+    Selects the DetectedFace with the highest confidence from each list of detections.
+
+    Parameters
+    ----------
+    face_detections : List[List[DetectedFace]]
+        A list of detection lists. Each inner list contains DetectedFace objects for one image.
+
+    Returns
+    -------
+    List[DetectedFace]
+        A list containing the DetectedFace with the highest confidence from each image.
+    """
+    return [[max(detections, key=lambda face: face.conf) for detections in face_detections if detections]]

@@ -113,3 +113,7 @@ class FaceEmbedding:
     def as_numpy(self):
         """Return embeddings as a NumPy array (on CPU)."""
         return self.embeddings.detach().cpu().numpy()
+    
+    def to_list(self):
+        """Return embeddings as a list of lists (compatible with Qdrant)."""
+        return self.embeddings.detach().cpu().numpy().tolist()

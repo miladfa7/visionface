@@ -12,24 +12,25 @@ class FaceEmbedder:
     A class for generating embeddings from face images
     using a specified face embedding model.
     """
-    def __init__(self, model_name: str = "FaceNet-VGG") -> None:
+    def __init__(self, embedding_backbone: str = "FaceNet-VGG") -> None:
         """
         Initializes the FaceEmbedder with the given embedding model.
 
         Parameters
         ----------
-        model_name : str, optional
+        embedding_backbone : str, optional
             The name of the face embedding model to use. Default is "FaceNet-VGG".
         """
-        self.face_embedder = self.build_model(model_name)
+        self.face_embedder = self.build_model(embedding_backbone)
+        self.vector_size = self.face_embedder.output_shape
 
-    def build_model(self, model_name) -> Any:
+    def build_model(self, embedding_backbone) -> Any:
         """
         Builds and returns the face embedding model.
 
         Parameters
         ----------
-        model_name : str
+        embedding_backbone : str
             The name of the model to load.
 
         Returns
@@ -37,7 +38,7 @@ class FaceEmbedder:
         Any
             An initialized face embedding model instance.
         """
-        return build_model(model_name, "face_embedding")
+        return build_model(embedding_backbone, "face_embedding")
     
     def embed_faces(
         self,
