@@ -66,13 +66,20 @@ class YOLODetector(Detector):
         # Load the YOLO face model
         return YOLO(model_path)
 
-    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
+    def detect_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        return_cropped_faces: bool = True
+    ) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the MediaPipe model.
 
         Parameters:
             imgs (List[np.ndarray]): 
                 A single image or a list of images in BGR format.
+
+            return_cropped_faces : bool, optional
+                Whether to include cropped face images in each DetectedFace object. Default is True.
 
         Returns:
             List[List[DetectedFace]]: 
@@ -86,10 +93,14 @@ class YOLODetector(Detector):
             show=False, 
             device=self.device
         )
-        detections = self.process_faces(imgs, results)
-        return detections
+        return self.process_faces(imgs, results, return_cropped_faces)
 
-    def process_faces(self, imgs: List[np.ndarray], results: Any) -> List[List[DetectedFace]]:
+    def process_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        results: Any, 
+        return_cropped_faces: bool
+    ) -> List[List[DetectedFace]]:
         """
         Process YOLO detection results and convert them into DetectedFace objects.
 
@@ -97,6 +108,8 @@ class YOLODetector(Detector):
         ----------
         imgs : List[np.ndarray]
             A single image or a list of images (NumPy arrays).
+        return_cropped_faces : bool
+                Whether to include cropped face images in each DetectedFace object.
 
         results : List[ultralytics.engine.results.Results]
             A list of YOLO detection results, one for each input image.
@@ -122,7 +135,7 @@ class YOLODetector(Detector):
             img = imgs[idx]
 
             for bbox, conf in zip(bboxes, confidences):
-                cropped_face = get_cropped_face(img, bbox)
+                cropped_face = get_cropped_face(img, bbox) if return_cropped_faces else None
                 facial_info = DetectedFace(
                     xmin=bbox[0],
                     ymin=bbox[1],

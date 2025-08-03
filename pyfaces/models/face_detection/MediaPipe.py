@@ -61,13 +61,19 @@ class MediaPipeDetector(Detector):
         )
         return face_detection
     
-    def _detect_one(self, img_id: int, img: np.ndarray) -> List[DetectedFace]:
+    def _detect_one(
+        self, 
+        img_id: int, 
+        img: np.ndarray, 
+        return_cropped_faces: bool
+    ) -> List[DetectedFace]:
         """
         Detect faces in a single image using the MediaPipe model.
 
         Parameters:
             img_id (int): id for the image
             img (np.ndarray): The input image in BGR format
+            return_cropped_faces(bool): cropped face images in each DetectedFace object.
 
         Returns:
             List[DetectedFace]: A list of DetectedFace objects.
@@ -77,9 +83,13 @@ class MediaPipeDetector(Detector):
         results = self.model.process(img)
         if results.detections is None:
             return []
-        return self.process_faces(img, results, w, h, img_id)
+        return self.process_faces(img, results, w, h, img_id, return_cropped_faces)
 
-    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
+    def detect_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        return_cropped_faces: bool = True
+    ) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the MediaPipe model.
 
@@ -87,16 +97,26 @@ class MediaPipeDetector(Detector):
             imgs: List[np.ndarray]: 
                 A single image or a list of images in BGR format.
 
+            return_cropped_faces : bool, optional
+                Whether to include cropped face images in each DetectedFace object. Default is True.
+        
         Returns:
             List[List[DetectedFace]]: 
                 A list where each element is a list of DetectedFace objects for the corresponding input image.
         """
         # Run face detection on each image  
-        detections = [self._detect_one(img_id, img) for img_id, img in enumerate(imgs)]
-
+        detections = [self._detect_one(img_id, img, return_cropped_faces) for img_id, img in enumerate(imgs)]
         return detections
 
-    def process_faces(self, img: np.ndarray, results: Any, img_width: int, img_height: int, img_id: int) -> List[DetectedFace]:
+    def process_faces(
+        self, 
+        img: np.ndarray, 
+        results: Any, 
+        img_width: int, 
+        img_height: int, 
+        img_id: int, 
+        return_cropped_faces: bool
+    ) -> List[DetectedFace]:
         """
         Process the raw detection results from MediaPipe into DetectedFace objects.
         
@@ -109,6 +129,8 @@ class MediaPipeDetector(Detector):
                 Width of the image in pixels.
             img_height: int
                 Height of the image in pixels.
+            return_cropped_faces : bool
+                Whether to include cropped face images in each DetectedFace object.
                 
         Returns:
             List[DetectedFace]
@@ -130,7 +152,7 @@ class MediaPipeDetector(Detector):
             
             # Convert xywh format to xyxy
             bbox = xywh2xyxy([x, y, w, h])
-            cropped_face = get_cropped_face(img, bbox)
+            cropped_face = get_cropped_face(img, bbox) if return_cropped_faces else None
 
             facial_info = DetectedFace(
                 xmin=bbox[0],

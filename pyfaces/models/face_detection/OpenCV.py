@@ -53,11 +53,9 @@ class OpenCVDetector(Detector):
         )
         # Load OpenCV DNN model
         model = cv2.dnn.readNetFromCaffe(prototxt_path, weights_path)
-
         # Set backend and target for better performance
         model.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
         model.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
-
         return model
 
     def _detect_one(self, img: np.ndarray) -> np.ndarray:
@@ -77,16 +75,21 @@ class OpenCVDetector(Detector):
             mean=(104.0, 177.0, 123.0)
             )
         self.model.setInput(blob)
-        detections = self.model.forward()
-        return detections
+        return self.model.forward()
     
-    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
+    def detect_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        return_cropped_faces: bool = True
+    ) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the Opencv model.
 
         Parameters:
             imgs (List[np.ndarray]): 
                 A single image or a list of images in BGR format.
+            return_cropped_faces : bool, optional
+                Whether to include cropped face images in each DetectedFace object. Default is True.
 
         Returns:
             List[List[DetectedFace]]: 
@@ -94,20 +97,23 @@ class OpenCVDetector(Detector):
                 Each DetectedFace includes the bounding box coordinates, confidence score, class name,
                 and the cropped face region.
         """        
-
         results = [self._detect_one(img) for img in imgs]
-        
-        all_detections = self.process_faces(imgs, results)
+        return self.process_faces(imgs, results, return_cropped_faces)
 
-        return all_detections
-
-    def process_faces(self, imgs: List[np.ndarray], results: List[np.ndarray]) -> List[List[DetectedFace]]:
+    def process_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        results: List[np.ndarray], 
+        return_cropped_faces: bool
+    ) -> List[List[DetectedFace]]:
         """
         Converts raw model outputs into structured DetectedFace objects.
 
         Args:
             imgs (List[np.ndarray]): List of original images.
             results (List[np.ndarray]): List of raw model outputs per image.
+            return_cropped_faces: bool
+                Whether to include cropped face images in each DetectedFace object.
 
         Returns:
             List[List[DetectedFace]]: List of detections for each image.
@@ -128,7 +134,7 @@ class OpenCVDetector(Detector):
                     x1, y1, x2, y2 = box.astype(int)
                     x1, y1 = max(0, x1),  max(0, y1)
                     x2, y2 = min(w, x2),  min(h, y2)
-                    cropped_face = get_cropped_face(img, [x1, y1, x2, y2])
+                    cropped_face = get_cropped_face(img, [x1, y1, x2, y2]) if return_cropped_faces else None
                     
                     facial_info = DetectedFace(
                         xmin=x1,

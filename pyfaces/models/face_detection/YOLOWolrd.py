@@ -1,3 +1,4 @@
+from click import prompt
 import numpy as np
 import logging
 from typing import List, Any, Union
@@ -61,7 +62,11 @@ class YOLOWolrdDetector(Detector):
         )
         return YOLOWorld(model_path)
 
-    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
+    def detect_faces(
+        self, 
+        imgs: List[np.ndarray],
+        return_cropped_faces: bool = True
+    ) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the YOLO Wolrd model.
 
@@ -69,13 +74,17 @@ class YOLOWolrdDetector(Detector):
             imgs (List[np.ndarray]): 
                 A single image or a list of images in BGR format.
 
+            return_cropped_faces : bool, optional
+                Whether to include cropped face images in each DetectedFace object. Default is True.
+
         Returns:
             List[List[DetectedFace]]: 
                 A list where each element is a list of DetectedFace objects corresponding to one input image.
                 Each DetectedFace includes the bounding box coordinates, confidence score, class name,
         """
         # By default, use a generic "face" prompt for detection
-        return self.detect_faces_with_prompt(imgs, prompts="face")
+        prompts = "face"
+        return self.detect_faces_with_prompt(imgs, prompts, return_cropped_faces)
 
     def _set_text_prompt(self, prompts: List[str]) -> None:
         """
@@ -87,6 +96,7 @@ class YOLOWolrdDetector(Detector):
         self, 
         imgs: List[np.ndarray],
         prompts: List[str],
+        return_cropped_faces: bool = True
     ) -> List[List[DetectedFace]]:
         """
         Detect faces in the given image based on text prompt guidance.
@@ -95,29 +105,31 @@ class YOLOWolrdDetector(Detector):
             img (np.ndarray): Input image as a NumPy array (H, W, C).
             prompts (Union[str, List[str]]): Either a single text prompt or a list of text prompts
                                             describing the faces to detect.
-            
+            return_cropped_faces : bool, optional
+                Whether to include cropped face images in each DetectedFace object. Default is True.
+
         Returns:
             List[DetectedFace]: A list of detected faces that match the prompt(s).
         """
-        # Set text prompt to detect faces
         self._set_text_prompt(prompts)
-        
         results = self.model.predict(
             imgs,
             verbose=False,
             show=False, 
             device=self.device
         )
+        return self.process_faces(imgs, results, return_cropped_faces)
 
-        # Process the results from Ultralytics YOLO World model
-        detections = self.process_faces(imgs, results)
-
-        return detections
 
     def detect_faces_with_visual(self, imgs: List[np.ndarray]) -> List[DetectedFace]:
         pass
     
-    def process_faces(self, imgs: List[np.ndarray], results: List[Any]) -> List[List[DetectedFace]]:
+    def process_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        results: List[Any], 
+        return_cropped_faces: bool
+    ) -> List[List[DetectedFace]]:
         """
         Process the raw detections into a structured format.
         """
@@ -125,7 +137,6 @@ class YOLOWolrdDetector(Detector):
         detections = []
 
         for idx, result in enumerate(results):
-
             current_detections = []
             class_id = result.boxes.cls.cpu().numpy().astype(int)
             class_names = np.array([result.names[i] for i in class_id])
@@ -138,7 +149,7 @@ class YOLOWolrdDetector(Detector):
                 continue
 
             for bbox, conf, class_name in zip(bboxes, confidence, class_names):
-                cropped_face = get_cropped_face(img, bbox)
+                cropped_face = get_cropped_face(img, bbox) if return_cropped_faces else None
                 facial_info = DetectedFace(
                     xmin=bbox[0], 
                     ymin=bbox[1], 

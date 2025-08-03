@@ -120,7 +120,11 @@ class MTCNNDetector(Detector):
             'onet': self.onet
         }
 
-    def detect_faces(self, imgs: List[np.ndarray]) -> List[List[DetectedFace]]:
+    def detect_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        return_cropped_faces: bool = True
+    ) -> List[List[DetectedFace]]:
         """
         Detect faces in one or more input images using the MTCNN model.
 
@@ -132,7 +136,9 @@ class MTCNNDetector(Detector):
             imgs (Union[np.ndarray, List[np.ndarray]]):
                 - A single image as a NumPy array with shape (H, W, 3), or
                 - A list of such images.
-        
+            return_cropped_faces : bool, optional
+                Whether to include cropped face images in each DetectedFace object. Default is True.
+
         Returns:
             List[List[DetectedFace]]: 
                 A list where each element is a list of DetectedFace objects corresponding to one input image.
@@ -142,18 +148,16 @@ class MTCNNDetector(Detector):
                     - Class name ("face")
                     - The cropped face region (cropped_face), extracted from the original image.
         """
-        # Preprocess input images
         processed_imgs = self._preprocess_images(imgs)
-        
-        # Run MTCNN face detection on the preprocessed images
         batch_boxes = self._run_mtcnn_pipeline(processed_imgs)
+        return self.process_faces(imgs, batch_boxes, return_cropped_faces)
 
-        # Convert raw detection results into DetectedFace objects
-        detections = self.process_faces(imgs, batch_boxes)
-
-        return detections
-
-    def process_faces(self, imgs: List[np.ndarray], results: np.ndarray) -> List[List[DetectedFace]]:
+    def process_faces(
+        self, 
+        imgs: List[np.ndarray], 
+        results: np.ndarray, 
+        return_cropped_faces: bool
+    ) -> List[List[DetectedFace]]:
         """
         Process MTCNN detection results and convert them into DetectedFace objects.
 
@@ -164,6 +168,9 @@ class MTCNNDetector(Detector):
             results (np.ndarray): 
                 A NumPy array of shape (batch_size, num_faces, 5), where each detected face is represented by 
                 [x1, y1, x2, y2, confidence_score]. Each sub-array corresponds to detections for a single image.
+            
+            return_cropped_faces : bool,
+                Whether to include cropped face images in each DetectedFace object. Default is True.
 
         Returns:
             List[List[DetectedFace]]: 
@@ -182,7 +189,7 @@ class MTCNNDetector(Detector):
             current_detections = []
             face_no = 0
             for bbox in bboxes:
-                cropped_face = get_cropped_face(img, bbox[:-1])
+                cropped_face = get_cropped_face(img, bbox[:-1]) if return_cropped_faces else None
                 class_name = "face" if bbox[2] != 0 and bbox[3] != 0 else None
                 facial_info = DetectedFace(
                     xmin=bbox[0],

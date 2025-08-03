@@ -13,6 +13,8 @@ from PIL import Image
 import requests
 from torch.nn.functional import interpolate
 
+from pyfaces.models.Detector import DetectedFace
+
 
 def load_images(
     inputs: Union[str, np.ndarray, IO[bytes], List[Union[str, np.ndarray, IO[bytes]]]]
@@ -36,7 +38,12 @@ def load_images(
 
     loaded_images = []
     for item in inputs:
-        if isinstance(item, np.ndarray):
+        if isinstance(item, list):
+            for i in item:
+                if isinstance(i, DetectedFace):
+                    loaded_images.append(i.cropped_face)
+            continue
+        elif isinstance(item, np.ndarray):
             loaded_images.append(item)
         elif hasattr(item, 'read') and callable(item.read):
             if isinstance(item, io.StringIO):
