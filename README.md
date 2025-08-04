@@ -17,35 +17,65 @@ VisionFace is a state-of-the-art, open-source framework for comprehensive face a
 
 </div>
 
+## ✨ What VisionFace Does
+
 <div align="center">
 <table>
- <tr>
-   <td><a href="#face-detection"><img src="banners/face_detection.jpg" alt="Face Detection" width="500"/></a></td>
-   <td><a href="#face-recognition"><img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/></a></td>
-   <td><a href="#face-landmarks"><img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/></a></td>
- </tr>
- <tr>
-   <td><a href="#-examples"><img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/></a></td>
-   <td><a href="#face-embeddings-1-minute"><img src="banners/face_verification.jpg" alt="Face Verification" width="500"/></a></td>
-   <td><a href="#-examples"><img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/></a></td>
- </tr>
+  <tr>
+    <td>
+      <a href="#face-detection">
+        <figure>
+          <img src="banners/face_detection.jpg" alt="Face Detection" width="500"/>
+          <figcaption style="text-align: center;">Face Detection</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#face-recognition">
+        <figure>
+          <img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/>
+          <figcaption style="text-align: center;">Face Recognition</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#face-landmarks">
+        <figure>
+          <img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/>
+          <figcaption style="text-align: center;">Face Landmarks</figcaption>
+        </figure>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="#-examples">
+        <figure>
+          <img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/>
+          <figcaption style="text-align: center;">Face Analysis</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#face-embeddings-1-minute">
+        <figure>
+          <img src="banners/face_verification.jpg" alt="Face Verification" width="500"/>
+          <figcaption style="text-align: center;">Face Verification</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#-examples">
+        <figure>
+          <img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/>
+          <figcaption style="text-align: center;">Face Visualization</figcaption>
+        </figure>
+      </a>
+    </td>
+  </tr>
 </table>
 </div>
 
-## ✨ What VisionFace Does
-
-
-```python
-from visionface import FaceDetection, FaceRecognition
-
-# Detect faces
-detector = FaceDetection()
-faces = detector.detect_faces("face_photo.jpg")
-
-# Recognize faces  
-recognizer = FaceRecognition()
-matches = recognizer.search_faces("query.jpg", collection="my_team")
-```
 
 - **Detect faces** in images with 12+ models (YOLO, MediaPipe, MTCNN...)
 - **Recognize faces** with vector search and embedding models
