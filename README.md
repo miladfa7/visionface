@@ -21,15 +21,15 @@ VisionFace is a state-of-the-art, open-source framework for comprehensive face a
 <div align="center">
 <table>
   <tr>
-    <td><img src="banners/face_detection.png" alt="Face Detection" width="500"/></td>
-    <td><img src="banners/face_recognition.png" alt="Face Recognition" width="500"/></td>
-        <td><img src="banners/face_landmarks.png" alt="Face Landmarks" width="500"/></td>
+    <td><img src="banners/face_detection.jpg" alt="Face Detection" width="500"/></td>
+    <td><img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/></td>
+        <td><img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/></td>
 
   </tr>
   <tr>
-    <td><img src="banners/face_analysis.png" alt="Face Analysis" width="500"/></td>
-    <td><img src="banners/face_verification.png" alt="Face Verification" width="500"/></td>
-    <td><img src="banners/face_visualization.png" alt="Face Visualization" width="500"/></td>
+    <td><img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/></td>
+    <td><img src="banners/face_verification.jpg" alt="Face Verification" width="500"/></td>
+    <td><img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/></td>
   </tr>
 </table>
 </div>
