@@ -301,6 +301,9 @@ def identify_person(camera_image):
 - 💡 [Use Case Examples](https://github.com/username/visionface/tree/main/examples)
 
 ## 🤝 Contributing
+<a href="https://github.com/miladfa7/visionface/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=miladfa7/visionface" />
+</a>
 
 We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md).
 
