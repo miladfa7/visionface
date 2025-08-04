@@ -7,7 +7,6 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://badge.fury.io/py/visionface.svg)](https://badge.fury.io/py/visionface)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://pepy.tech/badge/visionface)](https://pepy.tech/project/visionface)
 
 
 **Modern face detection, recognition & analysis in 3 lines of code**
@@ -18,35 +17,65 @@ VisionFace is a state-of-the-art, open-source framework for comprehensive face a
 
 </div>
 
+## ✨ What VisionFace Does
+
 <div align="center">
 <table>
- <tr>
-   <td><a href="#face-detection"><img src="banners/face_detection.jpg" alt="Face Detection" width="500"/></a></td>
-   <td><a href="#face-recognition"><img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/></a></td>
-   <td><a href="#-face-landmarks"><img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/></a></td>
- </tr>
- <tr>
-   <td><a href="#-examples"><img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/></a></td>
-   <td><a href="#face-embeddings-1-minute"><img src="banners/face_verification.jpg" alt="Face Verification" width="500"/></a></td>
-   <td><a href="#-examples"><img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/></a></td>
- </tr>
+  <tr>
+    <td>
+      <a href="#face-detection">
+        <figure>
+          <img src="banners/face_detection.jpg" alt="Face Detection" width="500"/>
+          <figcaption style="text-align: center;">Face Detection</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#face-recognition">
+        <figure>
+          <img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/>
+          <figcaption style="text-align: center;">Face Recognition</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#face-landmarks">
+        <figure>
+          <img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/>
+          <figcaption style="text-align: center;">Face Landmarks</figcaption>
+        </figure>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="#-examples">
+        <figure>
+          <img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/>
+          <figcaption style="text-align: center;">Face Analysis</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#face-embeddings-1-minute">
+        <figure>
+          <img src="banners/face_verification.jpg" alt="Face Verification" width="500"/>
+          <figcaption style="text-align: center;">Face Verification</figcaption>
+        </figure>
+      </a>
+    </td>
+    <td>
+      <a href="#-examples">
+        <figure>
+          <img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/>
+          <figcaption style="text-align: center;">Face Visualization</figcaption>
+        </figure>
+      </a>
+    </td>
+  </tr>
 </table>
 </div>
 
-## ✨ What VisionFace Does
-
-
-```python
-from VisionFace import FaceDetection, FaceRecognition
-
-# Detect faces
-detector = FaceDetection()
-faces = detector.detect_faces("group_photo.jpg")
-
-# Recognize faces  
-recognizer = FaceRecognition()
-matches = recognizer.search_faces("query.jpg", collection="my_team")
-```
 
 - **Detect faces** in images with 12+ models (YOLO, MediaPipe, MTCNN...)
 - **Recognize faces** with vector search and embedding models
@@ -64,7 +93,7 @@ pip install visionface
 
 ```python
 import cv2
-from VisionFace import FaceDetection, FaceAnnotators
+from visionface import FaceDetection, FaceAnnotators
 
 # 1. Initialize detector
 detector = FaceDetection(detector_backbone="yolo-small")
@@ -81,7 +110,7 @@ cv2.imwrite("detected.jpg", result)
 ### Face Recognition
 
 ```python
-from VisionFace import FaceRecognition
+from visionface import FaceRecognition
 
 # 1. Setup recognition system
 fr = FaceRecognition(detector_backbone="yolo-small", 
@@ -106,7 +135,7 @@ for match in matches[0]:
 ### Face Embeddings 
 
 ```python
-from VisionFace import FaceEmbedder
+from visionface import FaceEmbedder
 
 # 1. Initialize embedder
 embedder = FaceEmbedder(embedding_backbone="FaceNet-VGG")
@@ -122,6 +151,24 @@ for i, embedding in enumerate(embeddings):
     print(f"Face {i+1} embedding shape: {embedding.shape}")  # (512,)
     # Use for: face verification, clustering, custom databases
 ```
+
+### Face Landmarks
+```python
+from visionface import LandmarkDetection, FaceAnnotators
+
+landmark_detector = LandmarkDetection(detector_backbone="mediapipe")
+image = cv2.imread("your_image.jpg")
+
+# Get 468 facial landmarks
+landmarks = landmark_detector.detect_landmarks(image)
+
+# Visualize with connections
+result = FaceAnnotators.landmark_annotator(
+    image, landmarks[0], connections=True
+)
+cv2.imwrite("landmarks.jpg", result)
+```
+
 ## 💡 Examples
 
 <details>
@@ -129,7 +176,7 @@ for i, embedding in enumerate(embeddings):
 
 ```python
 import cv2
-from VisionFace import FaceDetection, FaceAnnotators
+from visionface import FaceDetection, FaceAnnotators
 
 detector = FaceDetection(detector_backbone="yolo-nano")  # Fastest model
 cap = cv2.VideoCapture(0)
@@ -152,7 +199,7 @@ cv2.destroyAllWindows()
 <summary><b>📊 Batch Processing</b></summary>
 
 ```python
-from VisionFace import FaceDetection
+from visionface import FaceDetection
 import glob
 
 detector = FaceDetection(detector_backbone="yolo-medium")
@@ -173,30 +220,10 @@ for i, detections in enumerate(all_detections):
 </details>
 
 <details>
-<summary><b>🔍 Face Landmarks</b></summary>
-
-```python
-from VisionFace import LandmarkDetection, FaceAnnotators
-
-landmark_detector = LandmarkDetection(detector_backbone="mediapipe")
-image = cv2.imread("portrait.jpg")
-
-# Get 468 facial landmarks
-landmarks = landmark_detector.detect_landmarks(image)
-
-# Visualize with connections
-result = FaceAnnotators.landmark_annotator(
-    image, landmarks[0], connections=True
-)
-cv2.imwrite("landmarks.jpg", result)
-```
-</details>
-
-<details>
 <summary><b>🏢 Employee Recognition System</b></summary>
 
 ```python
-from VisionFace import FaceRecognition
+from visionface import FaceRecognition
 import os
 
 # Initialize system
