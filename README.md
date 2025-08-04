@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="banners/VisionFace.png" alt="VisionFace"/></td>
+  ![VisionFace](https://github.com/user-attachments/assets/52ac9123-304c-4098-a1e5-f413d03bfec9)
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://badge.fury.io/py/visionface.svg)](https://badge.fury.io/py/visionface)
@@ -20,17 +20,16 @@ VisionFace is a state-of-the-art, open-source framework for comprehensive face a
 
 <div align="center">
 <table>
-  <tr>
-    <td><img src="banners/face_detection.jpg" alt="Face Detection" width="500"/></td>
-    <td><img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/></td>
-        <td><img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/></td>
-
-  </tr>
-  <tr>
-    <td><img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/></td>
-    <td><img src="banners/face_verification.jpg" alt="Face Verification" width="500"/></td>
-    <td><img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/></td>
-  </tr>
+ <tr>
+   <td><a href="#face-detection"><img src="banners/face_detection.jpg" alt="Face Detection" width="500"/></a></td>
+   <td><a href="#face-recognition"><img src="banners/face_recognition.jpg" alt="Face Recognition" width="500"/></a></td>
+   <td><a href="#-face-landmarks"><img src="banners/face_landmarks.jpg" alt="Face Landmarks" width="500"/></a></td>
+ </tr>
+ <tr>
+   <td><a href="#-examples"><img src="banners/face_analysis.jpg" alt="Face Analysis" width="500"/></a></td>
+   <td><a href="#face-embeddings-1-minute"><img src="banners/face_verification.jpg" alt="Face Verification" width="500"/></a></td>
+   <td><a href="#-examples"><img src="banners/face_visualization.jpg" alt="Face Visualization" width="500"/></a></td>
+ </tr>
 </table>
 </div>
 
