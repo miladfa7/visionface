@@ -90,6 +90,18 @@ pip install visionface
 ```
 
 ### Face Detection 
+The `Face Detection` module is your gateway to identifying faces in any image. Built for both beginners and experts, it provides a unified interface to 12+ cutting-edge detection models.
+
+✨ **Key Features:**
+   * **Multiple Input Sources**: Image Files, URLs, PIL images, NumPy arrays
+   * **Flexible Processing**: Single image or batch processing thousands of images efficiently
+   * **12+ State-of-the-Art Models**: From ultra-fast mobile models to high-precision detectors
+   * **One-Line Detection**: Get results with just ```detector.detect_faces(image)```
+   * **Rich Outputs**: Bounding boxes, confidence scores, cropped faces ready to use
+
+![face_detection_2](https://github.com/user-attachments/assets/6cb7e953-3448-486e-b6b4-32c654da1fce)
+
+📝 **Quick Example:**
 
 ```python
 import cv2
@@ -103,18 +115,30 @@ image = cv2.imread("your_image.jpg")
 faces = detector.detect_faces(image)
 
 # 3. Visualize results
-result = FaceAnnotators.box_annotator(image, faces)
+result = FaceAnnotators.box_annotator(image, faces[0])
 cv2.imwrite("detected.jpg", result)
 ```
 
 ### Face Recognition
+The `Face Recognition` module identifies individuals by generating embeddings and comparing them in a vector database. The process includes three stages: detecting faces, creating embeddings with the chosen model, and searching the database to find the closest matches.
+
+✨ **Key Features**:
+
+* **Multi-model support**: Choose from high-accuracy embedding backbones such as FaceNet-VGG, FaceNet-CASIA, and Dlib.
+* **Vector DB Integration**: Store and query embeddings using Qdrant, Milvus, or local file-based storage.
+* **Scalable Search**: Efficiently match thousands or millions of faces with fast search.
+* **Flexible Enrollment**: Add faces one-by-one or in batches with associated labels.
+* **Threshold & Ranking**: Control similarity thresholds and retrieve top-k matches for robust recognition results.
+
+![face)recognition](https://github.com/user-attachments/assets/55f83bc1-93ec-479d-a86b-820c7cef0605)
 
 ```python
 from visionface import FaceRecognition
 
 # 1. Setup recognition system
 fr = FaceRecognition(detector_backbone="yolo-small", 
-                     embedding_backbone="FaceNet-VGG")
+                     embedding_backbone="FaceNet-VGG",
+                     db_backend="qdrant")
 
 # 2. Add known faces
 fr.upsert_faces(
@@ -124,15 +148,28 @@ fr.upsert_faces(
 )
 
 # 3. Search for matches
-matches = fr.search_faces("security_camera.jpg", 
+matches = fr.search_faces("query_face_image.jpg", 
                          collection_name="employees",
-                         score_threshold=0.7)
+                         score_threshold=0.7,
+                         top_k=3)
 
-for match in matches[0]:
+for match in matches:
     print(f"Found: {match['face_name']} (confidence: {match['score']:.2f})")
 ```
 
 ### Face Embeddings 
+The `Face Embeddings` module transforms each detected face into a high-dimensional numeric vector (embedding) that captures its unique features.
+These embeddings can be used for:
+
+* **Face verification**: Check if two faces belong to the same perso
+* **Recognition**: Match against a database of known faces
+* **Clustering**: Group similar faces automatically
+* **Advanced analytics**: 
+
+**✨ Supported Embedding Models:**
+`FaceNet-VGG`, `FaceNet-CASIA`, `Dlib`
+
+📝 **Quick Example:**
 
 ```python
 from visionface import FaceEmbedder
@@ -153,20 +190,36 @@ for i, embedding in enumerate(embeddings):
 ```
 
 ### Face Landmarks
+The `Landmarks` module identifies key facial features with pixel-perfect accuracy. From eye positions to lip contours, get detailed facial geometry for advanced applications.
+
+✨ **Key Features:**
+
+* **Multiple Input Sources**: Image Files, URLs, PIL images, NumPy arrays
+* **Flexible Processing**: Single image or batch processing thousands of images efficiently
+* **2D & 3D Support**: Standard 2D points or full 3D face mesh
+* **Rich Annotations**: Built-in visualization with customizable styling
+* **Multiple Backends**: MediaPipe (468 points) or Dlib (68 points)
+
+![face_landmarks](https://github.com/user-attachments/assets/9b8264d1-2ea7-442c-ab08-7d11d35f1824)
+
+📝 **Quick Example:**
+
 ```python
-from visionface import LandmarkDetection, FaceAnnotators
+from visionface import LandmarkDetection
+from visionface.annotators.landmark import MediaPipeFaceMeshAnnotator
 
 landmark_detector = LandmarkDetection(detector_backbone="mediapipe")
 image = cv2.imread("your_image.jpg")
 
 # Get 468 facial landmarks
-landmarks = landmark_detector.detect_landmarks(image)
+landmarks = landmark_detector.detect_3d_landmarks(image)
 
 # Visualize with connections
-result = FaceAnnotators.landmark_annotator(
+vizualizer = MediaPipeFaceMeshAnnotator(thickness=2, circle_radius=3)
+result = vizualizer.annotate(
     image, landmarks[0], connections=True
 )
-cv2.imwrite("landmarks.jpg", result)
+cv2.imwrite("detected_landmarks.jpg", result)
 ```
 
 ## 💡 Examples
@@ -301,11 +354,13 @@ def identify_person(camera_image):
 - 💡 [Use Case Examples](https://github.com/username/visionface/tree/main/examples)
 
 ## 🤝 Contributing
+We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md).
+
 <a href="https://github.com/miladfa7/visionface/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=miladfa7/visionface" />
 </a>
+<br>
 
-We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md).
 
 **Quick ways to help:**
 - ⭐ Star the repo
@@ -325,7 +380,7 @@ MIT License - see [LICENSE](LICENSE) file.
   title = {VisionFace: Modern Face Detection & Recognition Framework},
   author = {VisionFace Team},
   year = {2025},
-  url = {https://github.com/username/visionface}
+  url = {https://github.com/miladfa7/visionface}
 }
 ```
 
